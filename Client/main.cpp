@@ -1,8 +1,14 @@
+#include <WinSock2.h>
+#include <WS2tcpip.h>
+
 #include <Windows.h>
 
 #include <SFML/Graphics.hpp>
 
 #include <iostream>
+#include <string>
+
+using namespace std;
 
 
 
@@ -10,14 +16,34 @@ void threadTest();
 
 
 
-#ifdef _DEBUG
 int main(int argc, char** argv)
-#else
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
-#endif
 {
+	cout << "Enter your name : ";
+
+	string name;
+	getline(cin, name);
+
+
+	WSADATA wsaData;
+	WSAStartup(MAKEWORD(2, 2), &wsaData);
+
+	addrinfo hints, *result;
+	ZeroMemory(&hints, sizeof(addrinfo));
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+
+	getaddrinfo(0, "27015", &hints, &result);
+	SOCKET connectSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+	
+	cout << "Trying to reach server...\n";
+	while (connect(connectSocket, result->ai_addr, result->ai_addrlen) != 0);
+
+	freeaddrinfo(result);
+
 	sf::RenderWindow window;
 	window.create(sf::VideoMode(600, 600), "TIC TAC TOE", sf::Style::Close);
+	window.setVerticalSyncEnabled(true);
 
 
 
@@ -44,11 +70,32 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 
 		window.clear();
+
+		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+
+		for (int y = 0; y < 600; y += 200) {
+			for (int x = 0; x < 600; x += 200) {
+				
+				if (mousePos.x >= x && mousePos.x < x + 200 && mousePos.y >= y && mousePos.y < y + 200) {
+					sf::RectangleShape over(sf::Vector2f(200, 200));
+					over.setPosition(sf::Vector2f(x, y));
+					over.setFillColor(sf::Color(60, 60, 60, 255));
+					window.draw(over);
+				}
+			}
+		}
+
 		for (const sf::RectangleShape* ps = lines; ps != lines + 4; ps++) {
 			window.draw(*ps);
 		}
 		window.display();
 	}
+
+
+
+	closesocket(connectSocket);
+
+	WSACleanup();
 
 	return 0;
 }
@@ -65,14 +112,14 @@ void threadTest()
 	DWORD threadID;
 	HANDLE threadHandle = CreateThread(0, 0, a, 0, 0, &threadID);
 
-	std::cout << "Thread created with ID " << threadID << '\n';
+	cout << "Thread created with ID " << threadID << '\n';
 
 	WaitForSingleObject(threadHandle, INFINITE);
 
 	DWORD exitCode;
 	GetExitCodeThread(threadHandle, &exitCode);
 
-	std::cout << "Thread exited with code " << exitCode << '\n';
+	cout << "Thread exited with code " << exitCode << '\n';
 
 	CloseHandle(threadHandle);
 }
