@@ -1,0 +1,23 @@
+# Build directories
+Debug/
+Release/
+x64/
+
+# Visual Studio project files
+/.vs
+*.vcxproj.user
+
+# Temporary / binary files
+*.exe
+*.obj
+*.lib
+*.dll
+*.slo
+*.lo
+*.o
+*.a
+*.so
+
+# Precompiled Headers
+*.gch
+*.pch
