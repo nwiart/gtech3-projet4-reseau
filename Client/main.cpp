@@ -19,6 +19,13 @@ void threadTest();
 
 int main(int argc, char** argv)
 {
+	cout << "Enter server IP : ";
+	int ip[4];
+	scanf_s("%d.%d.%d.%d", ip+0, ip+1, ip+2, ip+3);
+
+	int c;
+	while ( (c = getchar()) && c != EOF && c != '\n');
+
 	cout << "Enter your name : ";
 
 	string name;
@@ -27,8 +34,10 @@ int main(int argc, char** argv)
 
 	game_initialize();
 
-	network_initialize();
-	network_connect(0);
+	network_init();
+	
+	//network_setup_client4(N_MAKE_IPV4(192, 128, 43, 250), 27015);
+	network_setup_client4(N_MAKE_IPV4(ip[0], ip[1], ip[2], ip[3]), 27015);
 
 
 	threadTest();
@@ -41,7 +50,7 @@ int main(int argc, char** argv)
 
 
 
-	network_shutdown();
+	network_quit();
 
 	return 0;
 }
