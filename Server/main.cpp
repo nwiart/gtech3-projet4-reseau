@@ -1,7 +1,4 @@
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-
-#include <Windows.h>
+#include "network.h"
 
 #include <iostream>
 #include <string>
@@ -9,42 +6,26 @@
 using namespace std;
 
 
-
-void threadTest(SOCKET* listener);
+//void threadTest(SOCKET* listener);
 
 
 
 int main(int argc, char** argv)
 {
-	const char PORT[] = "27015";
+	if (!network_init()) {
+		std::cout << "Network initialization failed!\n";
+		return 1;
+	}
 
-	WSADATA wsaData;
-	WSAStartup(MAKEWORD(2, 2), &wsaData);
-
-	addrinfo hints, *result;
-
-	ZeroMemory(&hints, sizeof(addrinfo));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	hints.ai_flags = AI_PASSIVE;
-
-	getaddrinfo(0, PORT, &hints, &result);
-	SOCKET listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-	bind(listenSocket, result->ai_addr, result->ai_addrlen);
-
-	freeaddrinfo(result);
-
-	listen(listenSocket, SOMAXCONN);
-
-	cout << "TIC TAC TOE Server\n";
-	cout << "\n---\n\n";
-	cout << "Now listening on " << PORT << "...\n";
-
+	uint16_t port = 27015;
+	nsocket_t listenSocket = network_setup_server(port);
 	
-	threadTest(&listenSocket);
+	cout << "TIC TAC TOE Server\n";
+	cout << "---\n\n";
+	cout << "Now listening on " << port << "...\n";
 
-	string s;
+
+	/*string s;
 	while (true) {
 		cout << "> ";
 		getline(cin, s);
@@ -52,19 +33,19 @@ int main(int argc, char** argv)
 		if (s == "exit") {
 			break;
 		}
-	}
+	}*/
 
 
-	closesocket(listenSocket);
+	//int clientSocket = accept(listenSocket, (sockaddr*) &addr, &addrLen);
 
-	WSACleanup();
+	//std::cout << "INCOMING\n";
 
+	network_quit();
 	return 0;
 }
 
 
-
-DWORD a(void* p)
+/*DWORD a(void* p)
 {
 	SOCKET& listenSocket = *((SOCKET*) p);
 
@@ -90,4 +71,4 @@ void threadTest(SOCKET* listener)
 	//std::cout << "Thread exited with code " << exitCode << '\n';
 
 	//CloseHandle(threadHandle);
-}
+}*/

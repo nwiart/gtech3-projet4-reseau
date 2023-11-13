@@ -5,6 +5,7 @@ x64/
 
 # Visual Studio project files
 /.vs
+/.vscode
 *.vcxproj.user
 
 # Temporary / binary files
