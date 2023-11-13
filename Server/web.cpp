@@ -20,10 +20,11 @@ static string g_webPage;
 
 
 
-static int shit(void*)
+static int pageSendThread(void*)
 {
 	while (true)
 	{
+		// Get incoming HTTP request.
 		nsocket_t incoming = accept(g_webSocket, 0, 0);
 
 		char a[4096] = { 0 };
@@ -44,13 +45,14 @@ static int shit(void*)
 
 		send(incoming, buf.str().c_str(), buf.str().size(), 0);
 
+		// End of transfer.
 		closesocket(incoming);
 	}
 
 	return 0;
 }
 
-thread t(shit);
+thread t(pageSendThread);
 
 
 void web_start_server(uint16_t port)
