@@ -41,17 +41,13 @@ nsocket_t network_setup_server(uint16_t port)
 	hints.ai_protocol = IPPROTO_TCP;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(0, port_str, &hints, &result);
+	getaddrinfo("127.0.0.1", port_str, &hints, &result);
 	nsocket_t listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	bind(listenSocket, result->ai_addr, result->ai_addrlen);
 
 	freeaddrinfo(result);
 
 	listen(listenSocket, SOMAXCONN);
-
-	sockaddr addr;
-	int addrLen = sizeof(addr);
-	nsocket_t clientSocket = accept(listenSocket, &addr, &addrLen);
 
 	return listenSocket;
 }

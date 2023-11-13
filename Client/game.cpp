@@ -2,7 +2,10 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <iostream>
 #include <string.h>
+
+using namespace std;
 
 
 
@@ -18,9 +21,9 @@ static int current_player;
 static int winner;
 static struct
 {
-	int row : 2;
-	int col : 2;
-	int diagonal : 3;
+	uint32_t row : 2;
+	uint32_t col : 2;
+	uint32_t orientation : 3;
 }
 win_config;
 
@@ -107,7 +110,7 @@ static void game_render()
 
 			sf::RectangleShape r(sf::Vector2f(140, 140));
 			r.setPosition(sf::Vector2f(x * 200 + 30, y * 200 + 30));
-			r.setFillColor(grid[y][x] == 1 ? sf::Color::Blue : sf::Color::Red);
+			r.setFillColor(grid[y][x] == 1 ? sf::Color(50, 100, 255) : sf::Color(255, 60, 50));
 			window.draw(r);
 		}
 	}
@@ -119,8 +122,15 @@ static void game_render()
 
 	// Win.
 	if (winner != 0) {
-		//sf::RectangleShape win;
-		//window.draw(win);
+		sf::RectangleShape win;
+		win.setPosition(sf::Vector2f(win_config.col * 200.0F + 100.0F, win_config.row * 200.0F + 100.0F));
+		win.setSize(sf::Vector2f(400.0F, 2.0F));
+
+		if (win_config.orientation & 1) win.setSize(sf::Vector2f(400.0F * 1.41F, 2.0F));
+
+		win.setRotation(win_config.orientation * 45.0F);
+
+		window.draw(win);
 	}
 
 	window.display();
@@ -140,7 +150,6 @@ static bool horizontal_win(int y);
 static bool vertical_win(int x);
 static bool diagonal_win();
 
-#include <iostream>
 void gameplay_play(int x, int y)
 {
 	if (grid[y][x] != 0) return;
@@ -164,7 +173,7 @@ static bool horizontal_win(int y)
 	winner = current_player;
 	win_config.col = 0;
 	win_config.row = y;
-	win_config.diagonal = 0;
+	win_config.orientation = 0;
 	return true;
 }
 
@@ -179,7 +188,7 @@ static bool vertical_win(int x)
 	winner = current_player;
 	win_config.col = x;
 	win_config.row = 0;
-	win_config.diagonal = 0;
+	win_config.orientation = 2;
 	return true;
 }
 
@@ -205,13 +214,13 @@ static bool diagonal_win()
 		winner = current_player;
 		win_config.col = 0;
 		win_config.row = 0;
-		win_config.diagonal = 1;
+		win_config.orientation = 1;
 	}
 	else if (wr) {
 		winner = current_player;
-		win_config.col = 0;
+		win_config.col = 2;
 		win_config.row = 0;
-		win_config.diagonal = 2;
+		win_config.orientation = 3;
 	}
 
 	return wl || wr;

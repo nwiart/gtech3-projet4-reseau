@@ -1,30 +1,35 @@
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-
-#include <Windows.h>
-
 #include <iostream>
 #include <string>
 
 #include "game.h"
 #include "network.h"
 
+#include "thread.h"
+
 using namespace std;
 
 
 
-void threadTest();
+int clientThread(void* p)
+{
+	network_setup_client4(*((uint32_t*)p), 27015);
+
+	return 0;
+}
 
 
 
 int main(int argc, char** argv)
 {
+	// Ask for IP and name.
 	cout << "Enter server IP : ";
-	int ip[4];
-	scanf_s("%d.%d.%d.%d", ip+0, ip+1, ip+2, ip+3);
+	string sip;
+	getline(cin, sip);
 
-	int c;
-	while ( (c = getchar()) && c != EOF && c != '\n');
+	int ip[4];
+	if (!sip.empty()) {
+		sscanf_s(sip.c_str(), "%d.%d.%d.%d", ip+0, ip+1, ip+2, ip+3);
+	}
 
 	cout << "Enter your name : ";
 
@@ -32,15 +37,17 @@ int main(int argc, char** argv)
 	getline(cin, name);
 
 
+	// Init.
 	game_initialize();
 
 	network_init();
-	
-	//network_setup_client4(N_MAKE_IPV4(192, 128, 43, 250), 27015);
-	network_setup_client4(N_MAKE_IPV4(ip[0], ip[1], ip[2], ip[3]), 27015);
 
 
-	threadTest();
+	cout << "\nTrying to reach server at " << sip << ':' << 27015 << "...\n";
+
+	uint32_t packedIPV4 = N_MAKE_IPV4(ip[0], ip[1], ip[2], ip[3]);
+	thread t(&clientThread, &packedIPV4);
+	t.start();
 
 
 	while (game_is_running())
@@ -53,28 +60,4 @@ int main(int argc, char** argv)
 	network_quit();
 
 	return 0;
-}
-
-
-
-DWORD a(void* p)
-{
-	return 1;
-}
-
-void threadTest()
-{
-	DWORD threadID;
-	HANDLE threadHandle = CreateThread(0, 0, a, 0, 0, &threadID);
-
-	cout << "Thread created with ID " << threadID << '\n';
-
-	WaitForSingleObject(threadHandle, INFINITE);
-
-	DWORD exitCode;
-	GetExitCodeThread(threadHandle, &exitCode);
-
-	cout << "Thread exited with code " << exitCode << '\n';
-
-	CloseHandle(threadHandle);
 }
