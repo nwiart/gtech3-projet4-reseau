@@ -1,3 +1,3 @@
 #!/bin/sh
 
-g++ -o server.exe main.cpp network_posix.cpp
+g++ -o server.exe -I../common/ -L../common/ main.cpp -lcommon

@@ -33,7 +33,7 @@ nsocket_t network_setup_server(uint16_t port)
 	listen(listenSocket, 4);
 
 	socklen_t addrLen;
-	nsocket_t clientSocket = accept(listenSocket, &addr, &addrLen);
+	nsocket_t clientSocket = accept(listenSocket, (sockaddr*) &addr, &addrLen);
 
 	return listenSocket;
 }
