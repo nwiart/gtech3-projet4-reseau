@@ -57,7 +57,7 @@ thread t(pageSendThread);
 
 void web_start_server(uint16_t port)
 {
-	g_webSocket = network_setup_server(port);
+	g_webSocket = network_setup_web_server(port);
 
 	ifstream f("index.html");
 	stringstream buf;

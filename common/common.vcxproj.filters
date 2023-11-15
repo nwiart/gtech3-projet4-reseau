@@ -3,9 +3,30 @@
   <ItemGroup>
     <ClInclude Include="network.h" />
     <ClInclude Include="thread.h" />
+    <ClInclude Include="Packet.h" />
+    <ClInclude Include="enum.h" />
+    <ClInclude Include="ConnectionDenialReason.h" />
+    <ClInclude Include="mc\world\World.h" />
+    <ClInclude Include="mc\MC.h" />
+    <ClInclude Include="mc\render\WorldRenderer.h" />
+    <ClInclude Include="mc\network\server\MCServer.h" />
+    <ClInclude Include="mc\network\client\MCClient.h" />
+    <ClInclude Include="mc\network\client\MCClientPacketHandler.h" />
+    <ClInclude Include="mc\network\server\MCServerPacketHandler.h" />
+    <ClInclude Include="web.h" />
+    <ClInclude Include="DisconnectReason.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="network_win32.cpp" />
     <ClCompile Include="thread_win32.cpp" />
+    <ClCompile Include="Packet.cpp" />
+    <ClCompile Include="mc\world\World.cpp" />
+    <ClCompile Include="mc\network\client\MCClient.cpp" />
+    <ClCompile Include="mc\network\client\MCClientPacketHandler.cpp" />
+    <ClCompile Include="mc\network\server\MCServer.cpp" />
+    <ClCompile Include="mc\network\server\MCServerPacketHandler.cpp" />
+    <ClCompile Include="web.cpp" />
+    <ClCompile Include="DisconnectReason.cpp" />
+    <ClCompile Include="ConnectionDenialReason.cpp" />
   </ItemGroup>
 </Project>

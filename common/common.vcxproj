@@ -19,12 +19,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConnectionDenialReason.h" />
+    <ClInclude Include="DisconnectReason.h" />
+    <ClInclude Include="enum.h" />
+    <ClInclude Include="mc\MC.h" />
+    <ClInclude Include="mc\network\client\MCClient.h" />
+    <ClInclude Include="mc\network\client\MCClientPacketHandler.h" />
+    <ClInclude Include="mc\network\server\MCServer.h" />
+    <ClInclude Include="mc\network\server\MCServerPacketHandler.h" />
+    <ClInclude Include="mc\render\WorldRenderer.h" />
+    <ClInclude Include="mc\world\World.h" />
     <ClInclude Include="network.h" />
+    <ClInclude Include="Packet.h" />
     <ClInclude Include="thread.h" />
+    <ClInclude Include="web.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConnectionDenialReason.cpp" />
+    <ClCompile Include="DisconnectReason.cpp" />
+    <ClCompile Include="mc\network\client\MCClient.cpp" />
+    <ClCompile Include="mc\network\client\MCClientPacketHandler.cpp" />
+    <ClCompile Include="mc\network\server\MCServer.cpp" />
+    <ClCompile Include="mc\network\server\MCServerPacketHandler.cpp" />
+    <ClCompile Include="mc\world\World.cpp" />
     <ClCompile Include="network_win32.cpp" />
+    <ClCompile Include="Packet.cpp" />
     <ClCompile Include="thread_win32.cpp" />
+    <ClCompile Include="web.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -110,8 +131,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SFML_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)SFML-2.6.1\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -7,6 +7,8 @@
 
 typedef int64_t nsocket_t;
 
+typedef void (*PacketHandler)(nsocket_t, const struct PacketBase& b);
+
 
 
 // Platform-specific initialization.
@@ -16,10 +18,15 @@ void network_quit();
 
 
 // Server-side.
-nsocket_t network_setup_server(uint16_t port);
+nsocket_t network_setup_server(uint16_t port, PacketHandler h);
+
+nsocket_t network_setup_web_server(uint16_t port);
+
+// Used on Win32 to pickup events from an invisible window.
+void network_server_poll_events();
 
 void network_shutdown_server(nsocket_t socket);
 
 
 // Client-side.
-nsocket_t network_setup_client4(uint32_t addr, uint16_t port);
+nsocket_t network_setup_client4(uint32_t addr, uint16_t port, PacketHandler h);
