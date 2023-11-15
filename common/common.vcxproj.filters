@@ -15,6 +15,7 @@
     <ClInclude Include="mc\network\server\MCServerPacketHandler.h" />
     <ClInclude Include="web.h" />
     <ClInclude Include="DisconnectReason.h" />
+    <ClInclude Include="mc\player\Player.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="network_win32.cpp" />
@@ -28,5 +29,7 @@
     <ClCompile Include="web.cpp" />
     <ClCompile Include="DisconnectReason.cpp" />
     <ClCompile Include="ConnectionDenialReason.cpp" />
+    <ClCompile Include="mc\player\Player.cpp" />
+    <ClCompile Include="mc\MC.cpp" />
   </ItemGroup>
 </Project>

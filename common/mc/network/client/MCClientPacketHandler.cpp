@@ -1,8 +1,12 @@
 #include "mc/MC.h"
 #include "MCClientPacketHandler.h"
 
+#include "mc/world/World.h"
+
 #include <iostream>
 
+
+World* world = 0;
 
 
 void MCClientPacketHandler::response(nsocket_t socket, const PacketBase& b)
@@ -13,6 +17,20 @@ void MCClientPacketHandler::response(nsocket_t socket, const PacketBase& b)
 		{
 			const Packet<ConnectionResponsePacket>& p = (const Packet<ConnectionResponsePacket>&) b;
 			std::cout << p->m_reason.toString() << '\n';
+		}
+		break;
+
+	case ServerPackets::GetWorldDimensions:
+		{
+			const Packet<ServerGetWorldDimensionsPacket>& p = (const Packet<ServerGetWorldDimensionsPacket>&) b;
+			world = new World(p->m_sizeX, p->m_sizeY);
+		}
+		break;
+
+	case ServerPackets::GetWorldTiles:
+		{
+			const Packet<ServerGetWorldTilesPacket>& p = (const Packet<ServerGetWorldTilesPacket>&) b;
+			world->setTileRange(p->m_tiles, p->m_numTiles, p->m_startIndex);
 		}
 		break;
 
@@ -28,7 +46,7 @@ void MCClientPacketHandler::response(nsocket_t socket, const PacketBase& b)
 		}
 		break;
 
-	case ServerPackets::Play:
+	case ServerPackets::PlayerMove:
 		{
 
 		}

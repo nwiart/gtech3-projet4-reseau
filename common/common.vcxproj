@@ -27,6 +27,7 @@
     <ClInclude Include="mc\network\client\MCClientPacketHandler.h" />
     <ClInclude Include="mc\network\server\MCServer.h" />
     <ClInclude Include="mc\network\server\MCServerPacketHandler.h" />
+    <ClInclude Include="mc\player\Player.h" />
     <ClInclude Include="mc\render\WorldRenderer.h" />
     <ClInclude Include="mc\world\World.h" />
     <ClInclude Include="network.h" />
@@ -37,10 +38,12 @@
   <ItemGroup>
     <ClCompile Include="ConnectionDenialReason.cpp" />
     <ClCompile Include="DisconnectReason.cpp" />
+    <ClCompile Include="mc\MC.cpp" />
     <ClCompile Include="mc\network\client\MCClient.cpp" />
     <ClCompile Include="mc\network\client\MCClientPacketHandler.cpp" />
     <ClCompile Include="mc\network\server\MCServer.cpp" />
     <ClCompile Include="mc\network\server\MCServerPacketHandler.cpp" />
+    <ClCompile Include="mc\player\Player.cpp" />
     <ClCompile Include="mc\world\World.cpp" />
     <ClCompile Include="network_win32.cpp" />
     <ClCompile Include="Packet.cpp" />

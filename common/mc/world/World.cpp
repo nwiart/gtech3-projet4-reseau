@@ -16,5 +16,30 @@ World::~World()
 	}
 }
 
+uint16_t World::getTileAt(int x, int y) const
+{
+	if (x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY) return 0;
 
+	return m_tiles[y * m_sizeX + x].m_material;
+}
 
+uint16_t World::getItemAt(int x, int y) const
+{
+	if (x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY) return 0;
+
+	return m_tiles[y * m_sizeX + x].m_item;
+}
+
+void World::getTileRange(uint16_t* tileIDs, int numTiles, int startIndex) const
+{
+	for (Tile* t = m_tiles + startIndex; t != m_tiles + startIndex + numTiles; t++, tileIDs++) {
+		*tileIDs = t->m_material;
+	}
+}
+
+void World::setTileRange(const uint16_t* tileIDs, int numTiles, int startIndex)
+{
+	for (Tile* t = m_tiles + startIndex; t != m_tiles + startIndex + numTiles; t++, tileIDs++) {
+		t->m_material = *tileIDs;
+	}
+}

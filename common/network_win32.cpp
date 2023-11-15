@@ -39,7 +39,12 @@ static struct serverinfo_t
 
 	std::vector<nsocket_t> m_clients;
 }
-g_server;
+g_server =
+{
+	INVALID_SOCKET,
+	(HWND) INVALID_HANDLE_VALUE,
+	0
+};
 
 // Server event callbacks.
 static LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -173,6 +178,8 @@ nsocket_t network_setup_web_server(uint16_t port)
 
 void network_server_poll_events()
 {
+	if (g_server.m_hwnd == (HWND) INVALID_HANDLE_VALUE) return;
+
 	MSG m;
 	while (PeekMessage(&m, g_server.m_hwnd, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&m);

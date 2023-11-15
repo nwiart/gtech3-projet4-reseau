@@ -4,6 +4,8 @@
 #include "mc/network/server/MCServerPacketHandler.h"
 #include "mc/network/client/MCClient.h"
 
+#include "mc/world/World.h"
+
 #include "web.h"
 
 #include <Windows.h>
@@ -23,9 +25,55 @@ int MCServer::main(bool headless)
 	MCServer* server = new MCServer(headless);
 
 	server->host();
+	server->run();
+
+	delete server;
+
+	network_quit();
+
+	return 0;
+}
 
 
-	while (1) {
+
+MCServer::MCServer(bool headless)
+	: m_adminClient(0)
+	, m_adminClientThread(&MCServer::adminClientThreadMain, this)
+	, m_headless(headless)
+{
+	
+}
+
+MCServer::~MCServer()
+{
+	
+}
+
+void MCServer::host()
+{
+	cout << "TIC TAC TOE Server\n";
+	cout << "---\n\n";
+
+	// Start game server.
+	nsocket_t listenSocket = network_setup_server(MC::SERVER_PORT, &MCServerPacketHandler::response);
+	cout << "Now listening on " << MC::SERVER_PORT << "...\n";
+
+	// Start web server.
+	web_start_server(MC::WEB_PORT);
+	cout << "Web server broadcasting on " << MC::WEB_PORT << "...\n";
+}
+
+void MCServer::run()
+{
+	if (!m_headless) {
+		m_adminClientThread.start();
+	}
+
+	World* world = new World(16, 16);
+	
+
+	while (m_adminClientThread.isRunning())
+	{
 		network_server_poll_events();
 
 		Sleep(1);
@@ -40,42 +88,56 @@ int MCServer::main(bool headless)
 			break;
 		}
 	}*/
-
-
-	delete server;
-
-	network_quit();
-
-	return 0;
 }
 
-
-
-MCServer::MCServer(bool headless)
-	: m_adminClient(0)
+void MCServer::sendPacket(? ? , const PacketBase& b)
 {
-	if (!headless)
-	{
-		m_adminClient = new MCClient();
+	packet_send(?, b);
+}
+
+void MCServer::broadcastPacket(const PacketBase& b)
+{
+	for () {
+		packet_send(? , b);
 	}
 }
 
-MCServer::~MCServer()
+void MCServer::onPlayerConnect(nsocket_t socket)
 {
-	
+	int numTilesToSend = 16 * 16;
+	int numSent = 0;
+
+	while (numTilesToSend != 0) {
+		Packet<ServerGetWorldTilesPacket> p;
+		p->m_startIndex = numSent;
+
+		if (numTilesToSend >= 256) {
+			p->m_numTiles = 256;
+			world->getTileRange(p->m_tiles, 256, numSent);
+
+			numTilesToSend -= 256;
+			numSent += 256;
+		}
+		else {
+			p->m_numTiles = numTilesToSend;
+			world->getTileRange(p->m_tiles, numTilesToSend, numSent);
+
+			numTilesToSend = 0;
+		}
+
+		this->sendPacket(socket, p);
+	}
 }
 
-void MCServer::host()
+
+int MCServer::adminClientThreadMain(void* param)
 {
-	cout << "TIC TAC TOE Server\n";
-	cout << "---\n\n";
+	MCServer* server = reinterpret_cast<MCServer*>(param);
 
+	server->m_adminClient = new MCClient("MC Server");
 
-	nsocket_t listenSocket = network_setup_server(MC::SERVER_PORT, &MCServerPacketHandler::response);
+	server->m_adminClient->connect("127.0.0.1", MC::SERVER_PORT);
+	server->m_adminClient->run();
 
-	cout << "Now listening on " << MC::SERVER_PORT << "...\n";
-
-
-	web_start_server(MC::WEB_PORT);
-	cout << "Web server broadcasting on " << MC::WEB_PORT << "...\n";
+	return 0;
 }

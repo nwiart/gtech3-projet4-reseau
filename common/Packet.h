@@ -55,7 +55,7 @@ struct ClientPackets : kdEnum<uint32_t>
 	{
 		UNKNOWN = 0,
 		SetName,            // Sent to provide the server connection info.
-		Play,               // Sent when the player made a move.
+		PlayerMove,         // Sent when the player made a move.
 	};
 };
 
@@ -66,9 +66,11 @@ struct ServerPackets : kdEnum<uint32_t>
 	{
 		UNKNOWN = 0,
 		ConnectionResponse, // Sent to a client to notify whenther their connection was accepted.
+		GetWorldDimensions, // Sent to notify clients of the world size.
+		GetWorldTiles,      // Sent to serve tile data to the game (without items).
 		GameWin,            // Sent when a game is won.
 		GameRestart,        // Sent when the game restarts.
-		Play,               // Sent when someone makes a move.
+		PlayerMove,         // Sent when someone makes a move.
 		Disconnect,
 	};
 };
@@ -84,12 +86,13 @@ struct SetNamePacket
 	char name[64];
 };
 
-struct ClientPlayPacket
+struct ClientPlayerMovePacket
 {
-	static const uint32_t ID = ClientPackets::Play;
+	static const uint32_t ID = ClientPackets::PlayerMove;
 
-	uint16_t m_posX;
-	uint16_t m_posY;
+		/// Movement delta.
+	int16_t m_dx;
+	int16_t m_dy;
 };
 
 
@@ -101,6 +104,23 @@ struct ConnectionResponsePacket
 	static const uint32_t ID = ServerPackets::ConnectionResponse;
 
 	ConnectionDenialReason m_reason;
+};
+
+struct ServerGetWorldDimensionsPacket
+{
+	static const uint32_t ID = ServerPackets::GetWorldDimensions;
+
+	uint32_t m_sizeX;
+	uint32_t m_sizeY;
+};
+
+struct ServerGetWorldTilesPacket
+{
+	static const uint32_t ID = ServerPackets::GetWorldTiles;
+
+	uint32_t m_startIndex;
+	uint32_t m_numTiles;
+	uint16_t m_tiles[256];
 };
 
 struct GameWinPacket
@@ -115,13 +135,16 @@ struct GameRestartPacket
 	static const uint32_t ID = ServerPackets::GameRestart;
 };
 
-struct ServerPlayPacket
+struct ServerPlayerMovePacket
 {
-	static const uint32_t ID = ServerPackets::Play;
+	static const uint32_t ID = ServerPackets::PlayerMove;
 
+		/// Player ID of the moved player.
 	int m_player;
-	uint16_t m_posX;
-	uint16_t m_posY;
+
+		/// Player's absolute position.
+	int16_t m_posX;
+	int16_t m_posY;
 };
 
 struct ServerDisconnectPacket
