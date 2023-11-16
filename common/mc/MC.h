@@ -12,17 +12,28 @@ class MC
 {
 public:
 
-	static void init();
+	static inline MC& getInstance() { return *m_instance; }
 
-	static inline World* getWorld() { return m_world; }
-	static inline Player* getLocalPlayer() { return m_localPlayer; }
+	MC();
+
+	void init();
+
+	void openWorld(World* w) { m_world = w; }
+
+	inline World* getWorld() { return m_world; }
+	inline Player* getLocalPlayer() { return m_localPlayer; }
+
+public:
 
 	static const uint16_t SERVER_PORT = 27015;
 	static const uint16_t WEB_PORT    = SERVER_PORT + 1;
 
 
+
 private:
 
-	static World* m_world;
-	static Player* m_localPlayer;
+	static MC* m_instance;
+
+	World* m_world;
+	Player* m_localPlayer;
 };

@@ -36,6 +36,7 @@ static struct serverinfo_t
 	nsocket_t m_listenSocket;
 	HWND m_hwnd;
 	PacketHandler m_handler;
+	void* m_handlerParam;
 
 	std::vector<nsocket_t> m_clients;
 }
@@ -77,7 +78,7 @@ static LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 				{
 					char buf[PACKET_MAX_SIZE];
 					packet_recv(socket, buf);
-					g_server.m_handler(socket, *((const PacketBase*) buf));
+					g_server.m_handler(socket, *((const PacketBase*) buf), g_server.m_handlerParam);
 				}
 				break;
 			}
@@ -120,7 +121,7 @@ void network_quit()
 	WSACleanup();
 }
 
-nsocket_t network_setup_server(uint16_t port, PacketHandler h)
+nsocket_t network_setup_server(uint16_t port, PacketHandler h, void* handlerParam)
 {
 	char port_str[6] = { 0 };
 	_itoa_s(port, port_str, 10);
@@ -144,6 +145,7 @@ nsocket_t network_setup_server(uint16_t port, PacketHandler h)
 
 	g_server.m_listenSocket = listenSocket;
 	g_server.m_handler = h;
+	g_server.m_handlerParam = handlerParam;
 
 	g_server.m_hwnd = CreateWindow(g_wndClassName, "", 0, 0, 0, 100, 100, 0, 0, GetModuleHandle(0), 0);
 	WSAAsyncSelect(listenSocket, g_server.m_hwnd, NET_ACCEPT, FD_ACCEPT);
@@ -190,8 +192,9 @@ void network_server_poll_events()
 
 
 static PacketHandler g_clientHandler = 0;
+static void* g_clientHandlerParam = 0;
 
-nsocket_t network_setup_client4(uint32_t addr, uint16_t port, PacketHandler h)
+nsocket_t network_setup_client4(uint32_t addr, uint16_t port, PacketHandler h, void* handlerParam)
 {
 	// Convert to string.
 	char port_str[6] = { 0 };
@@ -215,6 +218,7 @@ nsocket_t network_setup_client4(uint32_t addr, uint16_t port, PacketHandler h)
 	freeaddrinfo(result);
 
 	g_clientHandler = h;
+	g_clientHandlerParam = handlerParam;
 
 	return connectSocket;
 }

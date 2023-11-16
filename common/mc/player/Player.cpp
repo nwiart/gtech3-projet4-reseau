@@ -42,5 +42,5 @@ void Player::move(int dx, int dy)
 
 bool Player::isRemote() const
 {
-	return MC::getLocalPlayer() == this;
+	return MC::getInstance().getLocalPlayer() == this;
 }

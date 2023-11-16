@@ -97,7 +97,7 @@ int MCClient::connectThreadMain(void* param)
 {
 	MCClient* client = reinterpret_cast<MCClient*>(param);
 
-	client->m_serverSocket = network_setup_client4(client->m_serverIP4, MC::SERVER_PORT, &MCClientPacketHandler::response);
+	client->m_serverSocket = network_setup_client4(client->m_serverIP4, MC::SERVER_PORT, &MCClientPacketHandler::response, client);
 
 	/*Packet<SetNamePacket> packet;
 	memcpy(packet->name, name.c_str(), name.size() + 1);

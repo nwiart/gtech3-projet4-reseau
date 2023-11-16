@@ -68,6 +68,8 @@ struct ServerPackets : kdEnum<uint32_t>
 		ConnectionResponse, // Sent to a client to notify whenther their connection was accepted.
 		GetWorldDimensions, // Sent to notify clients of the world size.
 		GetWorldTiles,      // Sent to serve tile data to the game (without items).
+		GetPlayerID,
+		PlayerSpawn,
 		GameWin,            // Sent when a game is won.
 		GameRestart,        // Sent when the game restarts.
 		PlayerMove,         // Sent when someone makes a move.
@@ -123,11 +125,26 @@ struct ServerGetWorldTilesPacket
 	uint16_t m_tiles[256];
 };
 
+struct ServerGetPlayerIDPacket
+{
+	static const uint32_t ID = ServerPackets::GetPlayerID;
+
+	int m_playerID;
+};
+
+struct ServerPlayerSpawnPacket
+{
+	static const uint32_t ID = ServerPackets::PlayerSpawn;
+
+	int m_playerID;
+	char m_playerName[64];
+};
+
 struct GameWinPacket
 {
 	static const uint32_t ID = ServerPackets::GameWin;
 
-	int m_player;
+	int m_playerID;
 };
 
 struct GameRestartPacket
@@ -140,7 +157,7 @@ struct ServerPlayerMovePacket
 	static const uint32_t ID = ServerPackets::PlayerMove;
 
 		/// Player ID of the moved player.
-	int m_player;
+	int m_playerID;
 
 		/// Player's absolute position.
 	int16_t m_posX;
@@ -151,5 +168,6 @@ struct ServerDisconnectPacket
 {
 	static const uint32_t ID = ServerPackets::Disconnect;
 
+	int m_playerID;
 	DisconnectReason m_reason;
 };

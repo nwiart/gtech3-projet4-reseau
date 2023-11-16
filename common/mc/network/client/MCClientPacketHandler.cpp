@@ -1,16 +1,19 @@
 #include "mc/MC.h"
 #include "MCClientPacketHandler.h"
 
+#include "mc/network/client/MCClient.h"
 #include "mc/world/World.h"
 
 #include <iostream>
 
 
-World* world = 0;
+static World* world = 0;
 
 
-void MCClientPacketHandler::response(nsocket_t socket, const PacketBase& b)
+void MCClientPacketHandler::response(nsocket_t socket, const PacketBase& b, void* param)
 {
+	MCClient* client = reinterpret_cast<MCClient*>(param);
+
 	switch (b.m_id)
 	{
 	case ServerPackets::ConnectionResponse:
@@ -31,6 +34,18 @@ void MCClientPacketHandler::response(nsocket_t socket, const PacketBase& b)
 		{
 			const Packet<ServerGetWorldTilesPacket>& p = (const Packet<ServerGetWorldTilesPacket>&) b;
 			world->setTileRange(p->m_tiles, p->m_numTiles, p->m_startIndex);
+		}
+		break;
+
+	case ServerPackets::GetPlayerID:
+		{
+			const Packet<ServerGetPlayerIDPacket>& p = (const Packet<ServerGetPlayerIDPacket>&) b;
+		}
+		break;
+
+	case ServerPackets::PlayerSpawn:
+		{
+			const Packet<ServerPlayerSpawnPacket>& p = (const Packet<ServerPlayerSpawnPacket>&) b;
 		}
 		break;
 

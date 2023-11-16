@@ -9,5 +9,5 @@ class MCServerPacketHandler
 {
 public:
 
-	static void response(nsocket_t socket, const PacketBase& b);
+	static void response(nsocket_t socket, const PacketBase& b, void* param);
 };

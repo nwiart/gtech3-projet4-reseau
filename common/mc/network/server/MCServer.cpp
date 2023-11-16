@@ -4,6 +4,8 @@
 #include "mc/network/server/MCServerPacketHandler.h"
 #include "mc/network/client/MCClient.h"
 
+#include "mc/network/server/MCServerClient.h"
+
 #include "mc/world/World.h"
 
 #include "web.h"
@@ -40,6 +42,7 @@ MCServer::MCServer(bool headless)
 	: m_adminClient(0)
 	, m_adminClientThread(&MCServer::adminClientThreadMain, this)
 	, m_headless(headless)
+	, m_currentPlayerID(0)
 {
 	
 }
@@ -55,7 +58,7 @@ void MCServer::host()
 	cout << "---\n\n";
 
 	// Start game server.
-	nsocket_t listenSocket = network_setup_server(MC::SERVER_PORT, &MCServerPacketHandler::response);
+	nsocket_t listenSocket = network_setup_server(MC::SERVER_PORT, &MCServerPacketHandler::response, this);
 	cout << "Now listening on " << MC::SERVER_PORT << "...\n";
 
 	// Start web server.
@@ -90,43 +93,100 @@ void MCServer::run()
 	}*/
 }
 
-void MCServer::sendPacket(? ? , const PacketBase& b)
+void MCServer::disconnectPlayer(nsocket_t socket, DisconnectReason reason)
 {
-	packet_send(?, b);
+	ClientList::iterator it = m_clients.find(socket);
+	if (it == m_clients.end()) {
+		return;
+	}
+
+	// Player not spawned in, probably got refused by the server.
+	if (it->second.getPlayer()) {
+
+		// Send disconnect reason.
+		Packet<ServerDisconnectPacket> disconnectPacket;
+		disconnectPacket->m_playerID = it->second.getPlayerID();
+		disconnectPacket->m_reason = reason;
+
+		this->broadcastPacket(disconnectPacket);
+
+		// TODO : Despawn player.
+		//it->second.getPlayer()
+	}
+
+	
+
+	// TODO : Close client socket.
+	
+
+	m_clients.erase(it);
 }
 
-void MCServer::broadcastPacket(const PacketBase& b)
+void MCServer::sendPacket(nsocket_t socket, const PacketBase& b)
 {
-	for () {
-		packet_send(? , b);
+	packet_send(socket, b);
+}
+
+void MCServer::broadcastPacket(const PacketBase& b, nsocket_t socketExcept)
+{
+	for (const ClientListElement& c : m_clients) {
+		if (c.first == socketExcept) continue;
+
+		packet_send(c.first, b);
 	}
 }
 
-void MCServer::onPlayerConnect(nsocket_t socket)
+void MCServer::onAccept(nsocket_t socket)
+{
+	// Register client connection.
+	m_clients.insert(ClientListElement(socket, MCServerClient(socket)));
+}
+
+void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 {
 	int numTilesToSend = 16 * 16;
 	int numSent = 0;
 
+	// TODO : Spawn player.
+	MCServerClient client(socket);
+
+	// Send assigned player ID.
+	Packet<ServerGetPlayerIDPacket> getPlayerIDPacket;
+	getPlayerIDPacket->m_playerID = m_currentPlayerID;
+	this->sendPacket(socket, getPlayerIDPacket);
+
+
+	// Send world tiles to player.
 	while (numTilesToSend != 0) {
 		Packet<ServerGetWorldTilesPacket> p;
 		p->m_startIndex = numSent;
 
 		if (numTilesToSend >= 256) {
 			p->m_numTiles = 256;
-			world->getTileRange(p->m_tiles, 256, numSent);
+			MC::getInstance().getWorld()->getTileRange(p->m_tiles, 256, numSent);
 
 			numTilesToSend -= 256;
 			numSent += 256;
 		}
 		else {
 			p->m_numTiles = numTilesToSend;
-			world->getTileRange(p->m_tiles, numTilesToSend, numSent);
+			MC::getInstance().getWorld()->getTileRange(p->m_tiles, numTilesToSend, numSent);
 
 			numTilesToSend = 0;
 		}
 
 		this->sendPacket(socket, p);
 	}
+
+	// Notify other players of spawn.
+	Packet<ServerPlayerSpawnPacket> playerSpawnPacket;
+	playerSpawnPacket->m_playerID = m_currentPlayerID;
+	strcpy_s(playerSpawnPacket->m_playerName, name);
+
+	this->broadcastPacket(playerSpawnPacket, socket);
+
+
+	m_currentPlayerID++;
 }
 
 

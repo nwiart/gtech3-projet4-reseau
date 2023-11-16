@@ -2,8 +2,16 @@
 
 
 
-World* MC::m_world = 0;
-Player* MC::m_localPlayer = 0;
+MC* MC::m_instance = 0;
+
+
+
+MC::MC()
+	: m_world(0)
+	, m_localPlayer(0)
+{
+	m_instance = this;
+}
 
 
 

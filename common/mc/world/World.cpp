@@ -7,6 +7,11 @@ World::World(int sizeX, int sizeY)
 	: m_sizeX(sizeX), m_sizeY(sizeY), m_tiles(0)
 {
 	m_tiles = reinterpret_cast<Tile*>(malloc(sizeX * sizeY * sizeof(Tile)));
+	
+	for (int i = 0; i < sizeX * sizeY; ++i) {
+		m_tiles[i].m_material = 1;
+		m_tiles[i].m_item = 0;
+	}
 }
 
 World::~World()
