@@ -4,6 +4,7 @@
 #include "mc/network/server/MCServer.h"
 
 #include <string>
+#include <iostream>
 
 
 
@@ -30,6 +31,7 @@ void MCServerPacketHandler::handlePacket(nsocket_t client, const PacketBase& b, 
 	case ClientPackets::SetName:
 		{
 			const Packet<SetNamePacket>& p = *((const Packet<SetNamePacket>*) & b);
+			std::cout << "Client sent SetName\n";
 
 			ConnectionDenialReason reason = ConnectionDenialReason::ALLOWED;
 			

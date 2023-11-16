@@ -93,6 +93,7 @@ void MCClient::sendPacket(const PacketBase& b)
 }
 
 
+#include <Windows.h>
 int MCClient::connectThreadMain(void* param)
 {
 	MCClient* client = reinterpret_cast<MCClient*>(param);
@@ -104,7 +105,11 @@ int MCClient::connectThreadMain(void* param)
 	client->sendPacket(packet);
 
 
-	network_client_poll_events();
+	while (1) {
+		network_client_poll_events();
+
+		Sleep(1);
+	}
 
 	return 0;
 }

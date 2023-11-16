@@ -143,17 +143,18 @@ void MCServer::onClose(nsocket_t socket)
 
 void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 {
-	int numTilesToSend = 16 * 16;
+	int numTilesToSend = 0;//16 * 16;
 	int numSent = 0;
 
 	// TODO : Spawn player.
 	MCServerClient client(socket);
 
-	// Send assigned player ID.
-	Packet<ServerGetPlayerIDPacket> getPlayerIDPacket;
-	getPlayerIDPacket->m_playerID = m_currentPlayerID;
-	this->sendPacket(socket, getPlayerIDPacket);
 
+	// Send world dimensions.
+	Packet<ServerGetWorldDimensionsPacket> getWorldDimensionsPacket;
+	getWorldDimensionsPacket->m_sizeX = 16;
+	getWorldDimensionsPacket->m_sizeY = 16;
+	this->sendPacket(socket, getWorldDimensionsPacket);
 
 	// Send world tiles to player.
 	while (numTilesToSend != 0) {
@@ -176,6 +177,11 @@ void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 
 		this->sendPacket(socket, p);
 	}
+
+	// Send assigned player ID.
+	Packet<ServerGetPlayerIDPacket> getPlayerIDPacket;
+	getPlayerIDPacket->m_playerID = m_currentPlayerID;
+	this->sendPacket(socket, getPlayerIDPacket);
 
 	// Notify other players of spawn.
 	Packet<ServerPlayerSpawnPacket> playerSpawnPacket;
