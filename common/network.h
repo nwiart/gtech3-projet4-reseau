@@ -8,6 +8,8 @@
 typedef int64_t nsocket_t;
 
 typedef void (*PacketHandler)(nsocket_t, const struct PacketBase& b, void* param);
+typedef void (*AcceptHandler)(nsocket_t, void* param);
+typedef void (*CloseHandler)(nsocket_t, void* param);
 
 
 
@@ -18,7 +20,7 @@ void network_quit();
 
 
 // Server-side.
-nsocket_t network_setup_server(uint16_t port, PacketHandler h, void* handlerParam);
+nsocket_t network_setup_server(uint16_t port, AcceptHandler acceptHandler, CloseHandler closeHandler, PacketHandler packetHandler, void* handlerParam);
 
 nsocket_t network_setup_web_server(uint16_t port);
 

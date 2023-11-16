@@ -7,7 +7,21 @@
 
 
 
-void MCServerPacketHandler::response(nsocket_t client, const PacketBase& b, void* param)
+void MCServerPacketHandler::handleAccept(nsocket_t socket, void* param)
+{
+	MCServer* server = reinterpret_cast<MCServer*>(param);
+
+	server->onAccept(socket);
+}
+
+void MCServerPacketHandler::handleClose(nsocket_t socket, void* param)
+{
+	MCServer* server = reinterpret_cast<MCServer*>(param);
+
+	server->onClose(socket);
+}
+
+void MCServerPacketHandler::handlePacket(nsocket_t client, const PacketBase& b, void* param)
 {
 	MCServer* server = reinterpret_cast<MCServer*>(param);
 

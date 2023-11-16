@@ -99,14 +99,15 @@ int MCClient::connectThreadMain(void* param)
 
 	client->m_serverSocket = network_setup_client4(client->m_serverIP4, MC::SERVER_PORT, &MCClientPacketHandler::response, client);
 
-	/*Packet<SetNamePacket> packet;
+	Packet<SetNamePacket> packet;
 	memcpy(packet->name, name.c_str(), name.size() + 1);
-	packet_send(serverSocket, packet);
+	client->sendPacket(packet);
+
 
 	char buf[PACKET_MAX_SIZE];
 	packet_recv(serverSocket, buf);
 
-	response(serverSocket, *((const PacketBase*)buf));*/
+	response(serverSocket, *((const PacketBase*)buf));
 
 	return 0;
 }

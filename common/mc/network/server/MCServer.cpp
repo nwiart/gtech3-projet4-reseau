@@ -108,16 +108,11 @@ void MCServer::disconnectPlayer(nsocket_t socket, DisconnectReason reason)
 		disconnectPacket->m_playerID = it->second.getPlayerID();
 		disconnectPacket->m_reason = reason;
 
-		this->broadcastPacket(disconnectPacket);
+		this->broadcastPacket(disconnectPacket, socket);
 
 		// TODO : Despawn player.
 		//it->second.getPlayer()
 	}
-
-	
-
-	// TODO : Close client socket.
-	
 
 	m_clients.erase(it);
 }
@@ -140,6 +135,11 @@ void MCServer::onAccept(nsocket_t socket)
 {
 	// Register client connection.
 	m_clients.insert(ClientListElement(socket, MCServerClient(socket)));
+}
+
+void MCServer::onClose(nsocket_t socket)
+{
+	this->disconnectPlayer(socket, DisconnectReason::PLAYER_LEFT);
 }
 
 void MCServer::onPlayerConnect(nsocket_t socket, const char* name)

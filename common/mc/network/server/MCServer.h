@@ -39,8 +39,13 @@ public:
 
 private:
 
+		/// New sockets and closing sockets handlers.
 	void onAccept(nsocket_t socket);
+	void onClose(nsocket_t socket);
+
+		/// Player finalized their connection.
 	void onPlayerConnect(nsocket_t socket, const char* name);
+
 
 	static int adminClientThreadMain(void* param);
 

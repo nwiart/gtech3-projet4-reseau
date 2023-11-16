@@ -9,6 +9,7 @@ struct DisconnectReason : kdEnum<uint32_t>
 	enum
 	{
 		UNKNOWN = 0,
+		PLAYER_LEFT,
 		SERVER_CLOSED,
 	};
 

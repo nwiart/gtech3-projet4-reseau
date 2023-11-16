@@ -35,16 +35,19 @@ static struct serverinfo_t
 {
 	nsocket_t m_listenSocket;
 	HWND m_hwnd;
-	PacketHandler m_handler;
-	void* m_handlerParam;
 
-	std::vector<nsocket_t> m_clients;
+	AcceptHandler m_acceptHandler;
+	CloseHandler m_closeHandler;
+	PacketHandler m_packetHandler;
+
+	void* m_handlerParam;
 }
 g_server =
 {
 	INVALID_SOCKET,
 	(HWND) INVALID_HANDLE_VALUE,
-	0
+	0, 0,
+	0, 0,
 };
 
 // Server event callbacks.
@@ -58,12 +61,12 @@ static LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 			int len = sizeof(addr);
 			nsocket_t clientSocket = accept(g_server.m_listenSocket, (sockaddr*) &addr, &len);
 
-			g_server.m_clients.push_back(clientSocket);
-
 			WSAAsyncSelect(clientSocket, hwnd, NET_CLIENT, FD_READ | FD_CLOSE);
 
 			UCHAR* ip = (UCHAR*) &addr.sin_addr.S_un.S_un_b;
 			std::cout << "New connection from " << (int)ip[0] << '.' << (int)ip[1] << '.' << (int)ip[2] << '.' << (int)ip[3] << ':' << addr.sin_port << '\n';
+
+			g_server.m_acceptHandler(clientSocket, g_server.m_handlerParam);
 		}
 		break;
 
@@ -73,12 +76,20 @@ static LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
 			switch (LOWORD(lparam))
 			{
-			case FD_CLOSE: closesocket(socket); break;
+			case FD_CLOSE:
+				{
+					g_server.m_closeHandler(socket, g_server.m_handlerParam);
+
+					closesocket(socket);
+				}
+				break;
+
 			case FD_READ:
 				{
 					char buf[PACKET_MAX_SIZE];
 					packet_recv(socket, buf);
-					g_server.m_handler(socket, *((const PacketBase*) buf), g_server.m_handlerParam);
+
+					g_server.m_packetHandler(socket, *((const PacketBase*) buf), g_server.m_handlerParam);
 				}
 				break;
 			}
@@ -121,7 +132,7 @@ void network_quit()
 	WSACleanup();
 }
 
-nsocket_t network_setup_server(uint16_t port, PacketHandler h, void* handlerParam)
+nsocket_t network_setup_server(uint16_t port, AcceptHandler acceptHandler, CloseHandler closeHandler, PacketHandler packetHandler, void* handlerParam)
 {
 	char port_str[6] = { 0 };
 	_itoa_s(port, port_str, 10);
@@ -144,7 +155,9 @@ nsocket_t network_setup_server(uint16_t port, PacketHandler h, void* handlerPara
 	listen(listenSocket, SOMAXCONN);
 
 	g_server.m_listenSocket = listenSocket;
-	g_server.m_handler = h;
+	g_server.m_acceptHandler = acceptHandler;
+	g_server.m_closeHandler = closeHandler;
+	g_server.m_packetHandler = packetHandler;
 	g_server.m_handlerParam = handlerParam;
 
 	g_server.m_hwnd = CreateWindow(g_wndClassName, "", 0, 0, 0, 100, 100, 0, 0, GetModuleHandle(0), 0);
