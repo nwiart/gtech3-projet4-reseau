@@ -2,11 +2,11 @@
 #include "MCServer.h"
 
 #include "mc/network/server/MCServerPacketHandler.h"
+#include "mc/network/server/MCServerClient.h"
 #include "mc/network/client/MCClient.h"
 
-#include "mc/network/server/MCServerClient.h"
-
 #include "mc/world/World.h"
+#include "mc/player/Player.h"
 
 #include "web.h"
 
@@ -23,6 +23,9 @@ int MCServer::main(bool headless)
 		std::cout << "Network initialization failed!\n";
 		return 1;
 	}
+
+	MC mc;
+	mc.init();
 
 	MCServer* server = new MCServer(headless);
 
@@ -68,13 +71,16 @@ void MCServer::host()
 
 void MCServer::run()
 {
+	// Create dummy world and set current.
+	World* world = new World(31, 47);
+	MC::getInstance().openWorld(world);
+
 	if (!m_headless) {
 		m_adminClientThread.start();
 	}
 
-	World* world = new World(16, 16);
-
-	while (m_adminClientThread.isRunning())
+	//while (m_adminClientThread.isRunning())
+	while (1)
 	{
 		network_server_poll_events();
 
@@ -143,20 +149,21 @@ void MCServer::onClose(nsocket_t socket)
 
 void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 {
-	int numTilesToSend = 0;//16 * 16;
-	int numSent = 0;
-
 	// TODO : Spawn player.
-	MCServerClient client(socket);
 
 
 	// Send world dimensions.
+	World* world = MC::getInstance().getWorld();
+
 	Packet<ServerGetWorldDimensionsPacket> getWorldDimensionsPacket;
-	getWorldDimensionsPacket->m_sizeX = 16;
-	getWorldDimensionsPacket->m_sizeY = 16;
+	getWorldDimensionsPacket->m_sizeX = world->getSizeX();
+	getWorldDimensionsPacket->m_sizeY = world->getSizeY();
 	this->sendPacket(socket, getWorldDimensionsPacket);
 
 	// Send world tiles to player.
+	int numTilesToSend = world->getSizeX() * world->getSizeY();
+	int numSent = 0;
+
 	while (numTilesToSend != 0) {
 		Packet<ServerGetWorldTilesPacket> p;
 		p->m_startIndex = numSent;
@@ -194,6 +201,13 @@ void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 	m_currentPlayerID++;
 }
 
+void MCServer::onPlayerMove(nsocket_t socket, int dx, int dy)
+{
+	auto it = m_clients.find(socket);
+
+	it->second.getPlayer()->move(dx, dy);
+}
+
 
 int MCServer::adminClientThreadMain(void* param)
 {
@@ -203,6 +217,8 @@ int MCServer::adminClientThreadMain(void* param)
 
 	server->m_adminClient->connect("127.0.0.1", MC::SERVER_PORT);
 	server->m_adminClient->run();
+
+	delete server->m_adminClient;
 
 	return 0;
 }

@@ -28,10 +28,11 @@ void MCServerPacketHandler::handlePacket(nsocket_t client, const PacketBase& b, 
 
 	switch (b.m_id)
 	{
-	case ClientPackets::SetName:
+	case ClientPackets::Join:
 		{
-			const Packet<SetNamePacket>& p = *((const Packet<SetNamePacket>*) & b);
-			std::cout << "Client sent SetName\n";
+			std::cout << "Client sent Join\n";
+
+			const Packet<ClientJoinPacket>& p = *((const Packet<ClientJoinPacket>*) & b);
 
 			ConnectionDenialReason reason = ConnectionDenialReason::ALLOWED;
 			
@@ -47,12 +48,17 @@ void MCServerPacketHandler::handlePacket(nsocket_t client, const PacketBase& b, 
 				break;
 			}
 
-			std::string name = p->name;
+			std::string name = p->m_name;
 			server->onPlayerConnect(client, name.c_str());
 		}
 		break;
 
 	case ClientPackets::PlayerMove:
+		{
+			std::cout << "Client sent PlayerMove\n";
+
+			//MC::getInstance().getWorld()->
+		}
 		break;
 	}
 }

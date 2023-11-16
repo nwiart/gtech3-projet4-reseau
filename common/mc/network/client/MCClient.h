@@ -20,6 +20,7 @@ public:
 
 
 	MCClient(const char* windowTitle);
+	~MCClient();
 
 	void run();
 

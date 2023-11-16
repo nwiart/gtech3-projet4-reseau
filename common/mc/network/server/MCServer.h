@@ -46,6 +46,8 @@ private:
 		/// Player finalized their connection.
 	void onPlayerConnect(nsocket_t socket, const char* name);
 
+	void onPlayerMove(nsocket_t socket, int dx, int dy);
+
 
 	static int adminClientThreadMain(void* param);
 

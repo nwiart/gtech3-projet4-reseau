@@ -20,15 +20,19 @@ void Player::move(int dx, int dy)
 	if (dx < -1 || dx > 1 || dy < -1 || dy > 1) return;
 
 	if (dx) {
-		uint16_t tileID = m_world->getTileAt(m_xPos + dx, m_yPos);
-		if (tileID == 0) {
+		if (m_world->isTileBroken(m_xPos + dx, m_yPos)) {
 			m_xPos += dx;
+		}
+		else {
+			m_world->breakTile(m_xPos + dx, m_yPos);
 		}
 	}
 	else if (dy) {
-		uint16_t tileID = m_world->getTileAt(m_xPos, m_yPos + dy);
-		if (tileID == 0) {
+		if (m_world->isTileBroken(m_xPos, m_yPos + dy)) {
 			m_yPos += dy;
+		}
+		else {
+			m_world->breakTile(m_xPos, m_yPos + dy);
 		}
 	}
 
@@ -40,7 +44,13 @@ void Player::move(int dx, int dy)
 	}
 }
 
+void Player::teleport(int x, int y)
+{
+	m_xPos = x;
+	m_yPos = y;
+}
+
 bool Player::isRemote() const
 {
-	return MC::getInstance().getLocalPlayer() == this;
+	return MC::getInstance().getLocalPlayer() != this;
 }

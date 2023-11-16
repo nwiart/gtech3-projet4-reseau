@@ -18,7 +18,7 @@ public:
 
 	void init();
 
-	void openWorld(World* w) { m_world = w; }
+	void openWorld(World* w);
 
 	inline World* getWorld() { return m_world; }
 	inline Player* getLocalPlayer() { return m_localPlayer; }

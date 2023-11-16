@@ -29,6 +29,7 @@
     <ClInclude Include="mc\network\server\MCServerClient.h" />
     <ClInclude Include="mc\network\server\MCServerPacketHandler.h" />
     <ClInclude Include="mc\player\Player.h" />
+    <ClInclude Include="mc\registry\TileRegistry.h" />
     <ClInclude Include="mc\render\WorldRenderer.h" />
     <ClInclude Include="mc\world\World.h" />
     <ClInclude Include="network.h" />

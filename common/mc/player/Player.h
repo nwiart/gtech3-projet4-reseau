@@ -15,6 +15,7 @@ public:
 	Player();
 
 	void move(int dx, int dy);
+	void teleport(int x, int y);
 
 	bool isRemote() const;
 

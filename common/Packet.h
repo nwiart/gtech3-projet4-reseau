@@ -54,7 +54,7 @@ struct ClientPackets : kdEnum<uint32_t>
 	enum
 	{
 		UNKNOWN = 0,
-		SetName,            // Sent to provide the server connection info.
+		Join,               // Sent to provide the server connection info.
 		PlayerMove,         // Sent when the player made a move.
 	};
 };
@@ -79,13 +79,19 @@ struct ServerPackets : kdEnum<uint32_t>
 
 
 
+//
 // Client packets.
+//
 
-struct SetNamePacket
+struct ClientJoinPacket
 {
-	static const uint32_t ID = ClientPackets::SetName;
+	static const uint32_t ID = ClientPackets::Join;
 
-	char name[64];
+		/// Player name.
+	char m_name[64];
+
+		/// Joining as a spectator.
+	bool m_isSpectator;
 };
 
 struct ClientPlayerMovePacket
@@ -99,7 +105,9 @@ struct ClientPlayerMovePacket
 
 
 
+//
 // Server packets.
+//
 
 struct ConnectionResponsePacket
 {

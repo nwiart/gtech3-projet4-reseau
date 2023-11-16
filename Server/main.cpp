@@ -3,14 +3,6 @@
 
 
 
-static void disconnect_client(nsocket_t client)
-{
-	
-	//closesocket(client);
-}
-
-
-
 int main(int argc, char** argv)
 {
 	return MCServer::main(false);

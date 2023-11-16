@@ -48,6 +48,9 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 			std::cout << "Server sent GetPlayerID\n";
 
 			const Packet<ServerGetPlayerIDPacket>& p = (const Packet<ServerGetPlayerIDPacket>&) b;
+
+			world->spawnLocalPlayer(p->m_playerID);
+			MC::getInstance().openWorld(world);
 		}
 		break;
 
