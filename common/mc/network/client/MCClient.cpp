@@ -11,12 +11,12 @@ using namespace std;
 
 MCClient* MCClient::m_instance = 0;
 
-
+string name;
 
 int MCClient::main()
 {
 	// Ask for IP and name.
-	string name, stringip;
+	string stringip;
 
 	cout << "Enter your name : "; getline(cin, name);
 	cout << "Enter server IP : "; getline(cin, stringip);
@@ -97,17 +97,14 @@ int MCClient::connectThreadMain(void* param)
 {
 	MCClient* client = reinterpret_cast<MCClient*>(param);
 
-	client->m_serverSocket = network_setup_client4(client->m_serverIP4, MC::SERVER_PORT, &MCClientPacketHandler::response, client);
+	client->m_serverSocket = network_setup_client4(client->m_serverIP4, MC::SERVER_PORT, &MCClientPacketHandler::handlePacket, client);
 
 	Packet<SetNamePacket> packet;
 	memcpy(packet->name, name.c_str(), name.size() + 1);
 	client->sendPacket(packet);
 
 
-	char buf[PACKET_MAX_SIZE];
-	packet_recv(serverSocket, buf);
-
-	response(serverSocket, *((const PacketBase*)buf));
+	network_client_poll_events();
 
 	return 0;
 }

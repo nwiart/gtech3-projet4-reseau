@@ -58,7 +58,7 @@ void MCServer::host()
 	cout << "---\n\n";
 
 	// Start game server.
-	nsocket_t listenSocket = network_setup_server(MC::SERVER_PORT, &MCServerPacketHandler::response, this);
+	nsocket_t listenSocket = network_setup_server(MC::SERVER_PORT, &MCServerPacketHandler::handleAccept, &MCServerPacketHandler::handleClose, &MCServerPacketHandler::handlePacket, this);
 	cout << "Now listening on " << MC::SERVER_PORT << "...\n";
 
 	// Start web server.
@@ -73,7 +73,6 @@ void MCServer::run()
 	}
 
 	World* world = new World(16, 16);
-	
 
 	while (m_adminClientThread.isRunning())
 	{

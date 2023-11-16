@@ -10,7 +10,7 @@
 static World* world = 0;
 
 
-void MCClientPacketHandler::response(nsocket_t socket, const PacketBase& b, void* param)
+void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, void* param)
 {
 	MCClient* client = reinterpret_cast<MCClient*>(param);
 
