@@ -288,12 +288,17 @@ nsocket_t network_setup_client4(uint32_t addr, uint16_t port, PacketHandler h, v
 	return connectSocket;
 }
 
+void network_shutdown_client(nsocket_t socket)
+{
+	closesocket(socket);
+}
+
 void network_client_poll_events()
 {
 	if (g_clientHwnd == (HWND) INVALID_HANDLE_VALUE) return;
 
 	MSG m;
-	while (PeekMessage(&m, g_clientHwnd, 0, 0, PM_REMOVE)) {
+	while (GetMessage(&m, g_clientHwnd, 0, 0)) {
 		TranslateMessage(&m);
 		DispatchMessage(&m);
 	}

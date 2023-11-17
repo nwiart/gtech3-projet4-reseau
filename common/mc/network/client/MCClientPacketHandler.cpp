@@ -103,8 +103,7 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 			std::cout << "Server sent Disconnect\n";
 
 			const Packet<ServerDisconnectPacket>& p = (const Packet<ServerDisconnectPacket>&) b;
-			std::cout << p->m_reason.toString() << '\n';
-
+			
 			World* world = MC::getInstance().getLocalWorld();
 			world->despawnPlayer(p->m_playerID);
 		}

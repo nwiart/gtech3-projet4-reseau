@@ -66,12 +66,17 @@ MCClient::~MCClient()
 {
 
 }
-#include <Windows.h>
+
 void MCClient::run()
 {
 	// Create window.
 	m_window.create(sf::VideoMode(640, 640), m_windowTitle.c_str(), sf::Style::Close);
 	m_window.setVerticalSyncEnabled(true);
+	m_window.setKeyRepeatEnabled(false);
+
+	sf::Font f;
+	f.loadFromFile("C:/Windows/Fonts/consola.ttf");
+	f.setSmooth(false);
 
 	// Main loop.
 	int frame = 0;
@@ -152,12 +157,20 @@ void MCClient::run()
 		for (const std::pair<int, Player*>& pl : world->getPlayers()) {
 			Player* p = pl.second;
 
+			// Player rect.
 			sf::RectangleShape r;
 			r.setSize(sf::Vector2f(0.6F, 0.6F));
 			r.setOrigin(r.getSize() * 0.5F);
 			r.setFillColor(sf::Color::White);
 			r.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 0.5F));
 			m_window.draw(r);
+
+			// Player name.
+			sf::Text t("Thing", f, 12);
+			t.setScale(sf::Vector2f(1.0F, -1.0F) / 16.0F);
+			t.setOrigin(t.getLocalBounds().getSize() * 0.5F);
+			t.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 2.0F));
+			m_window.draw(t);
 		}
 		
 		m_window.display();
@@ -166,7 +179,8 @@ void MCClient::run()
 
 	// TODO : clean exit.
 	m_connectThread.stop();
-	closesocket(m_serverSocket);
+
+	network_shutdown_client(m_serverSocket);
 }
 
 void MCClient::connect(const char* stringip, uint16_t port)
@@ -194,17 +208,13 @@ int MCClient::connectThreadMain(void* param)
 
 	client->m_serverSocket = network_setup_client4(client->m_serverIP4, MC::SERVER_PORT, &MCClientPacketHandler::handlePacket, client);
 
+	// Send join information.
 	Packet<ClientJoinPacket> packet;
 	memcpy(packet->m_name, name.c_str(), name.size() + 1);
 	packet->m_isSpectator = true;
 	client->sendPacket(packet);
-
-
-	while (1) {
-		network_client_poll_events();
-
-		Sleep(1);
-	}
+	
+	network_client_poll_events();
 
 	return 0;
 }

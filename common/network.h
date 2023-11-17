@@ -33,6 +33,8 @@ void network_shutdown_server(nsocket_t socket);
 // Client-side.
 nsocket_t network_setup_client4(uint32_t addr, uint16_t port, PacketHandler h, void* handlerParam);
 
+void network_shutdown_client(nsocket_t socket);
+
 // Used on Win32 to pickup events from an invisible window.
 // DO NOT use network_server_poll_events(), this function executes actions intended for server only.
 void network_client_poll_events();
