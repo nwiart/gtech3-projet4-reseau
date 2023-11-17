@@ -83,7 +83,6 @@ static LRESULT CALLBACK ServerWinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 			case FD_CLOSE:
 				{
 					g_server.m_closeHandler(socket, g_server.m_handlerParam);
-					std::cout << "Connection closed.\n";
 
 					closesocket(socket);
 				}

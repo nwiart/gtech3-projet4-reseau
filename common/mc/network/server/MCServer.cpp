@@ -167,11 +167,6 @@ void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 {
 	World* world = MC::getInstance().getWorld();
 
-	// Spawn player and update client info.
-	MCServerClient& clientInfo = this->getClient(socket);
-	clientInfo.m_playerID = m_currentPlayerID;
-	clientInfo.m_player = world->spawnRemotePlayer(m_currentPlayerID, world->getSizeX() / 2, 0);
-
 	// Send world dimensions.
 	Packet<ServerGetWorldDimensionsPacket> getWorldDimensionsPacket;
 	getWorldDimensionsPacket->m_sizeX = world->getSizeX();
@@ -207,6 +202,21 @@ void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 	Packet<ServerGetPlayerIDPacket> getPlayerIDPacket;
 	getPlayerIDPacket->m_playerID = m_currentPlayerID;
 	this->sendPacket(socket, getPlayerIDPacket);
+
+	// Send already connected players to new player.
+	for (const std::pair<int, Player*>& p : world->getPlayers()) {
+		Packet<ServerPlayerSpawnPacket> playerSpawnPacket;
+		playerSpawnPacket->m_playerID = p.first;
+		playerSpawnPacket->m_xPos = p.second->getPosX();
+		playerSpawnPacket->m_yPos = p.second->getPosY();
+
+		this->sendPacket(socket, playerSpawnPacket);
+	}
+
+	// Spawn player and update client info.
+	MCServerClient& clientInfo = this->getClient(socket);
+	clientInfo.m_playerID = m_currentPlayerID;
+	clientInfo.m_player = world->spawnRemotePlayer(m_currentPlayerID, world->getSizeX() / 2, 0);
 
 	// Notify other players of spawn.
 	Packet<ServerPlayerSpawnPacket> playerSpawnPacket;
