@@ -22,8 +22,17 @@ void MC::init()
 
 }
 
-void MC::openWorld(World* w)
+void MC::openWorld(World* localWorld, WorldServer* serverWorld)
 {
-	m_world = w;
-	m_localPlayer = w->getLocalPlayer();
+	m_localWorld = localWorld;
+	m_world = serverWorld;
+
+	m_localPlayer = localWorld ? localWorld->getLocalPlayer() : 0;
+}
+
+void MC::openLocalWorld(World* localWorld)
+{
+	m_localWorld = localWorld;
+
+	m_localPlayer = localWorld->getLocalPlayer();
 }

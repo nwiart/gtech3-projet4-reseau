@@ -28,6 +28,7 @@
     <ClInclude Include="mc\network\server\MCServer.h" />
     <ClInclude Include="mc\network\server\MCServerClient.h" />
     <ClInclude Include="mc\network\server\MCServerPacketHandler.h" />
+    <ClInclude Include="mc\network\server\world\WorldServer.h" />
     <ClInclude Include="mc\player\Player.h" />
     <ClInclude Include="mc\registry\TileRegistry.h" />
     <ClInclude Include="mc\render\WorldRenderer.h" />
@@ -45,6 +46,7 @@
     <ClCompile Include="mc\network\client\MCClientPacketHandler.cpp" />
     <ClCompile Include="mc\network\server\MCServer.cpp" />
     <ClCompile Include="mc\network\server\MCServerPacketHandler.cpp" />
+    <ClCompile Include="mc\network\server\world\WorldServer.cpp" />
     <ClCompile Include="mc\player\Player.cpp" />
     <ClCompile Include="mc\world\World.cpp" />
     <ClCompile Include="network_win32.cpp" />

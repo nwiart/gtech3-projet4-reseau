@@ -37,7 +37,11 @@ public:
 		/// Broadcast a packet to all clients at the same time.
 	void broadcastPacket(const PacketBase& b, nsocket_t socketExcept = -1);
 
+	const MCServerClient& getClient(nsocket_t socket) const;
+
 private:
+
+	MCServerClient& getClient(nsocket_t socket);
 
 		/// New sockets and closing sockets handlers.
 	void onAccept(nsocket_t socket);

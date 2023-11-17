@@ -4,6 +4,8 @@
 #include <stdint.h>
 
 class World;
+class WorldServer;
+
 class Player;
 
 
@@ -18,9 +20,12 @@ public:
 
 	void init();
 
-	void openWorld(World* w);
+		/// Server world should be non-null only if this instance is hosting.
+	void openWorld(World* localWorld, WorldServer* serverWorld);
+	void openLocalWorld(World* localWorld);
 
-	inline World* getWorld() { return m_world; }
+	inline World* getLocalWorld() { return m_localWorld; }
+	inline WorldServer* getWorld() { return m_world; }
 	inline Player* getLocalPlayer() { return m_localPlayer; }
 
 public:
@@ -34,6 +39,8 @@ private:
 
 	static MC* m_instance;
 
-	World* m_world;
+	World* m_localWorld;
+	WorldServer* m_world;
+
 	Player* m_localPlayer;
 };

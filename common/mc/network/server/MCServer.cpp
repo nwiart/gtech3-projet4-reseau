@@ -5,7 +5,7 @@
 #include "mc/network/server/MCServerClient.h"
 #include "mc/network/client/MCClient.h"
 
-#include "mc/world/World.h"
+#include "mc/network/server/world/WorldServer.h"
 #include "mc/player/Player.h"
 
 #include "web.h"
@@ -23,6 +23,8 @@ int MCServer::main(bool headless)
 		std::cout << "Network initialization failed!\n";
 		return 1;
 	}
+
+	srand(time(0));
 
 	MC mc;
 	mc.init();
@@ -72,8 +74,8 @@ void MCServer::host()
 void MCServer::run()
 {
 	// Create dummy world and set current.
-	World* world = new World(31, 47);
-	MC::getInstance().openWorld(world);
+	WorldServer* world = new WorldServer(31, 47, this);
+	MC::getInstance().openWorld(0, world);
 
 	if (!m_headless) {
 		m_adminClientThread.start();
@@ -115,11 +117,13 @@ void MCServer::disconnectPlayer(nsocket_t socket, DisconnectReason reason)
 
 		this->broadcastPacket(disconnectPacket, socket);
 
-		// TODO : Despawn player.
-		//it->second.getPlayer()
+		// Despawn player.
+		MC::getInstance().getWorld()->despawnPlayer(it->second.getPlayerID());
 	}
 
 	m_clients.erase(it);
+
+	std::cout << "Player disconnected (" << reason.toString() << ")\n";
 }
 
 void MCServer::sendPacket(nsocket_t socket, const PacketBase& b)
@@ -136,6 +140,18 @@ void MCServer::broadcastPacket(const PacketBase& b, nsocket_t socketExcept)
 	}
 }
 
+const MCServerClient& MCServer::getClient(nsocket_t socket) const
+{
+	return m_clients.find(socket)->second;
+}
+
+MCServerClient& MCServer::getClient(nsocket_t socket)
+{
+	return m_clients.find(socket)->second;
+}
+
+
+
 void MCServer::onAccept(nsocket_t socket)
 {
 	// Register client connection.
@@ -149,12 +165,14 @@ void MCServer::onClose(nsocket_t socket)
 
 void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 {
-	// TODO : Spawn player.
-
-
-	// Send world dimensions.
 	World* world = MC::getInstance().getWorld();
 
+	// Spawn player and update client info.
+	MCServerClient& clientInfo = this->getClient(socket);
+	clientInfo.m_playerID = m_currentPlayerID;
+	clientInfo.m_player = world->spawnRemotePlayer(m_currentPlayerID, world->getSizeX() / 2, 0);
+
+	// Send world dimensions.
 	Packet<ServerGetWorldDimensionsPacket> getWorldDimensionsPacket;
 	getWorldDimensionsPacket->m_sizeX = world->getSizeX();
 	getWorldDimensionsPacket->m_sizeY = world->getSizeY();
@@ -193,10 +211,11 @@ void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 	// Notify other players of spawn.
 	Packet<ServerPlayerSpawnPacket> playerSpawnPacket;
 	playerSpawnPacket->m_playerID = m_currentPlayerID;
+	playerSpawnPacket->m_xPos = clientInfo.getPlayer()->getPosX();
+	playerSpawnPacket->m_yPos = clientInfo.getPlayer()->getPosY();
 	strcpy_s(playerSpawnPacket->m_playerName, name);
 
 	this->broadcastPacket(playerSpawnPacket, socket);
-
 
 	m_currentPlayerID++;
 }

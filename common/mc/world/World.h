@@ -1,8 +1,9 @@
 #pragma once
 
-#include <vector>
+#include <map>
 
 class Player;
+class MCServerClient;
 
 
 
@@ -19,16 +20,23 @@ public:
 
 public:
 
-	World(int sizeX, int sizeY);
+	World(int sizeX, int sizeY, bool generate);
 	~World();
 
 	void spawnLocalPlayer(int playerID);
+	Player* spawnRemotePlayer(int playerID, int xPos, int yPos);
 
 	uint16_t getTileAt(int x, int y) const;
 	uint16_t getItemAt(int x, int y) const;
 	bool isTileBroken(int x, int y) const;
 
-	void breakTile(int x, int y);
+	virtual void movePlayer(const MCServerClient& player, int dx, int dy);
+	virtual void breakTile(int x, int y);
+
+	virtual void despawnPlayer(int playerID);
+
+	void moveRemotePlayer(int playerID, int xPos, int yPos);
+
 
 		/// Used by networking to build a world.
 	void getTileRange(uint16_t* tileIDs, int numTiles, int startIndex) const;
@@ -42,7 +50,7 @@ public:
 	inline int getSizeY() const { return m_sizeY; }
 
 	inline Player* getLocalPlayer() const { return m_localPlayer; }
-	inline const std::vector<Player*>& getPlayers() const { return m_players; }
+	inline const std::map<int, Player*>& getPlayers() const { return m_players; }
 
 
 
@@ -53,7 +61,7 @@ private:
 	int m_sizeY;
 
 	Player* m_localPlayer;
-	std::vector<Player*> m_players;
+	std::map<int, Player*> m_players;
 
 		/// Is this world hosted by a remote server.
 	bool m_isRemote;

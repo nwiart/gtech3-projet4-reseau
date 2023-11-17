@@ -2,6 +2,7 @@
 #include "MCServerPacketHandler.h"
 
 #include "mc/network/server/MCServer.h"
+#include "mc/network/server/world/WorldServer.h"
 
 #include <string>
 #include <iostream>
@@ -57,7 +58,10 @@ void MCServerPacketHandler::handlePacket(nsocket_t client, const PacketBase& b, 
 		{
 			std::cout << "Client sent PlayerMove\n";
 
-			//MC::getInstance().getWorld()->
+			const Packet<ClientPlayerMovePacket>& p = (const Packet<ClientPlayerMovePacket>&) b;
+
+			const MCServerClient& clientInfo = server->getClient(client);
+			MC::getInstance().getWorld()->movePlayer(clientInfo, p->m_dx, p->m_dy);
 		}
 		break;
 	}

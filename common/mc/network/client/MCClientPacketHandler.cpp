@@ -30,7 +30,7 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 			std::cout << "Server sent GetWorldDimensions\n";
 
 			const Packet<ServerGetWorldDimensionsPacket>& p = (const Packet<ServerGetWorldDimensionsPacket>&) b;
-			world = new World(p->m_sizeX, p->m_sizeY);
+			world = new World(p->m_sizeX, p->m_sizeY, false);
 		}
 		break;
 
@@ -50,13 +50,16 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 			const Packet<ServerGetPlayerIDPacket>& p = (const Packet<ServerGetPlayerIDPacket>&) b;
 
 			world->spawnLocalPlayer(p->m_playerID);
-			MC::getInstance().openWorld(world);
+			MC::getInstance().openLocalWorld(world);
 		}
 		break;
 
 	case ServerPackets::PlayerSpawn:
 		{
+			std::cout << "Server sent PlayerSpawn\n";
+
 			const Packet<ServerPlayerSpawnPacket>& p = (const Packet<ServerPlayerSpawnPacket>&) b;
+			world->spawnRemotePlayer(p->m_playerID, p->m_xPos, p->m_yPos);
 		}
 		break;
 
@@ -74,7 +77,24 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 
 	case ServerPackets::PlayerMove:
 		{
+			std::cout << "Server sent PlayerMove\n";
 
+			const Packet<ServerPlayerMovePacket>& p = (const Packet<ServerPlayerMovePacket>&) b;
+
+			World* world = MC::getInstance().getLocalWorld();
+			world->moveRemotePlayer(p->m_playerID, p->m_posX, p->m_posY);
+		}
+		break;
+
+	case ServerPackets::BlockBreak:
+		{
+			std::cout << "Server sent BlockBreak\n";
+
+			const Packet<ServerBlockBreakPacket>& p = (const Packet<ServerBlockBreakPacket>&) b;
+
+			World* world = MC::getInstance().getLocalWorld();
+			world->setItemAt(p->m_item, p->m_posX, p->m_posY);
+			world->breakTile(p->m_posX, p->m_posY);
 		}
 		break;
 
@@ -84,6 +104,9 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 
 			const Packet<ServerDisconnectPacket>& p = (const Packet<ServerDisconnectPacket>&) b;
 			std::cout << p->m_reason.toString() << '\n';
+
+			World* world = MC::getInstance().getLocalWorld();
+			world->despawnPlayer(p->m_playerID);
 		}
 		break;
 	}

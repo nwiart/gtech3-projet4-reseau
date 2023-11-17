@@ -73,6 +73,7 @@ struct ServerPackets : kdEnum<uint32_t>
 		GameWin,            // Sent when a game is won.
 		GameRestart,        // Sent when the game restarts.
 		PlayerMove,         // Sent when someone makes a move.
+		BlockBreak,
 		Disconnect,
 	};
 };
@@ -130,7 +131,7 @@ struct ServerGetWorldTilesPacket
 
 	uint32_t m_startIndex;
 	uint32_t m_numTiles;
-	uint16_t m_tiles[256];
+	uint16_t m_tiles[256];  // Tiles buffer. Highest bit is the block state (broken / still present).
 };
 
 struct ServerGetPlayerIDPacket
@@ -144,7 +145,9 @@ struct ServerPlayerSpawnPacket
 {
 	static const uint32_t ID = ServerPackets::PlayerSpawn;
 
-	int m_playerID;
+	uint32_t m_playerID;
+	uint16_t m_xPos;
+	uint16_t m_yPos;
 	char m_playerName[64];
 };
 
@@ -170,6 +173,18 @@ struct ServerPlayerMovePacket
 		/// Player's absolute position.
 	int16_t m_posX;
 	int16_t m_posY;
+};
+
+struct ServerBlockBreakPacket
+{
+	static const uint32_t ID = ServerPackets::BlockBreak;
+
+		/// Block position.
+	uint16_t m_posX;
+	uint16_t m_posY;
+
+		/// Optional item revealed inside the block. Set to 0 for none.
+	uint16_t m_item;
 };
 
 struct ServerDisconnectPacket

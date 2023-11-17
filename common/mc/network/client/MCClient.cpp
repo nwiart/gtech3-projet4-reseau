@@ -30,6 +30,8 @@ int MCClient::main()
 		return 1;
 	}
 
+	srand(time(0));
+
 	MC mc;
 	mc.init();
 
@@ -108,7 +110,7 @@ void MCClient::run()
 		view.setCenter(player ? sf::Vector2f(player->getPosX() + 0.5F, player->getPosY() + 0.5F) : sf::Vector2f(7.5F, 15.5F));
 		m_window.setView(view);
 
-		World* world = MC::getInstance().getWorld();
+		World* world = MC::getInstance().getLocalWorld();
 
 		sf::Color dark(140, 140, 140);
 
@@ -147,7 +149,9 @@ void MCClient::run()
 			}
 		}
 
-		for (Player* p : world->getPlayers()) {
+		for (const std::pair<int, Player*>& pl : world->getPlayers()) {
+			Player* p = pl.second;
+
 			sf::RectangleShape r;
 			r.setSize(sf::Vector2f(0.6F, 0.6F));
 			r.setOrigin(r.getSize() * 0.5F);
@@ -160,6 +164,7 @@ void MCClient::run()
 		frame++;
 	}
 
+	// TODO : clean exit.
 	m_connectThread.stop();
 	closesocket(m_serverSocket);
 }
