@@ -19,6 +19,7 @@
     <ClInclude Include="mc\network\server\MCServerClient.h" />
     <ClInclude Include="mc\registry\TileRegistry.h" />
     <ClInclude Include="mc\network\server\world\WorldServer.h" />
+    <ClInclude Include="mc\world\WorldGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="network_win32.cpp" />
@@ -35,5 +36,7 @@
     <ClCompile Include="mc\player\Player.cpp" />
     <ClCompile Include="mc\MC.cpp" />
     <ClCompile Include="mc\network\server\world\WorldServer.cpp" />
+    <ClCompile Include="mc\registry\TileRegistry.cpp" />
+    <ClCompile Include="mc\world\WorldGenerator.cpp" />
   </ItemGroup>
 </Project>

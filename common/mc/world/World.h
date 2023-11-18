@@ -9,6 +9,8 @@ class MCServerClient;
 
 class World
 {
+	friend class WorldGenerator;
+
 public:
 
 	struct Tile

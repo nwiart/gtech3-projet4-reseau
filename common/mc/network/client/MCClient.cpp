@@ -4,6 +4,8 @@
 #include "mc/world/World.h"
 #include "mc/player/Player.h"
 
+#include "mc/registry/TileRegistry.h"
+
 #include "mc/network/client/MCClientPacketHandler.h"
 
 #include <iostream>
@@ -117,11 +119,7 @@ void MCClient::run()
 
 		World* world = MC::getInstance().getLocalWorld();
 
-		sf::Color dark(140, 140, 140);
-
-		//for (int y = 0; y < world->getSizeY(); y++) {
 		for (int y = max(0, player->getPosY() - 10); y < min(world->getSizeY(), player->getPosY() + 11); y++) {
-		//	for (int x = 0; x < world->getSizeX(); x++) {
 
 			for (int x = max(0, player->getPosX() - 10); x < min(world->getSizeX(), player->getPosX() + 11); x++) {
 
@@ -131,8 +129,7 @@ void MCClient::run()
 				uint16_t itemID = tiles->m_item;
 
 				if (tileID) {
-					sf::Color c = tileID == 2 ? sf::Color(127, 127, 127) : sf::Color(170, 110, 60);
-					if (tiles->m_broken) c = c * dark;
+					sf::Color c = tiles->m_broken ? TileRegistry::getTile(tileID).getBrokenColor() : TileRegistry::getTile(tileID).getColor();
 
 					sf::RectangleShape r;
 					r.setSize(sf::Vector2f(1, 1));

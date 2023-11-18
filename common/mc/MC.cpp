@@ -2,6 +2,8 @@
 
 #include "mc/world/World.h"
 
+#include "mc/registry/TileRegistry.h"
+
 
 
 MC* MC::m_instance = 0;
@@ -19,7 +21,7 @@ MC::MC()
 
 void MC::init()
 {
-
+	TileRegistry::init();
 }
 
 void MC::openWorld(World* localWorld, WorldServer* serverWorld)

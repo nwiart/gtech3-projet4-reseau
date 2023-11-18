@@ -5,6 +5,8 @@
 
 #include "mc/network/server/MCServerClient.h"
 
+#include "mc/world/WorldGenerator.h"
+
 
 
 World::World(int sizeX, int sizeY, bool generate)
@@ -24,29 +26,13 @@ World::World(int sizeX, int sizeY, bool generate)
 		int y = i / sizeX;
 		float distCenter = fabs((y / (float) sizeY) * 2.0F - 1.0F);
 
-		m_tiles[i].m_material = 1;
+		m_tiles[i].m_material = 2 - (distCenter * 3.0F - 1.5F >= (rand() / (float)RAND_MAX));
 		m_tiles[i].m_broken = distCenter * 3.0F - 2.0F >= (rand() / (float) RAND_MAX);
 		m_tiles[i].m_item = 0;
 	}
 
-	// Generate treasure structure.
-	int centerX = m_sizeX / 2;
-	int centerY = m_sizeY / 2;
-	m_tiles[centerY * m_sizeX + centerX].m_broken = true;
-
-	for (int y = -3; y <= 3; ++y) {
-		for (int x = -3; x <= 3; ++x) {
-			if (x * x + y * y > 10.0F) continue;
-			m_tiles[(y + centerY) * m_sizeX + (x + centerX)].m_material = 2;
-		}
-	}
-
-	this->setItemAt(1, centerX, centerY);
-
-	// Random objects test.
-	for (int i = 0; i < 20; ++i) {
-		this->setItemAt(1, rand() % m_sizeX, rand() % m_sizeY);
-	}
+	WorldGenerator gen(this, true);
+	gen.generate();
 }
 
 World::~World()
@@ -121,7 +107,6 @@ void World::despawnPlayer(int playerID)
 
 	Player* player = it->second;
 
-	//player->isRemote();
 	delete player;
 
 	m_players.erase(it);
