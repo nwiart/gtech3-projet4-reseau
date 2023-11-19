@@ -121,9 +121,9 @@ void MCServer::disconnectPlayer(nsocket_t socket, DisconnectReason reason)
 		MC::getInstance().getWorld()->despawnPlayer(it->second.getPlayerID());
 	}
 
-	m_clients.erase(it);
+	std::cout << "Player " << it->second.getPlayerID() << " disconnected (" << reason.toString() << ")\n";
 
-	std::cout << "Player disconnected (" << reason.toString() << ")\n";
+	m_clients.erase(it);
 }
 
 void MCServer::sendPacket(nsocket_t socket, const PacketBase& b)
@@ -167,6 +167,8 @@ void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 {
 	World* world = MC::getInstance().getWorld();
 
+	std::cout << "Player joined with ID " << m_currentPlayerID << '\n';
+
 	// Send world dimensions.
 	Packet<ServerGetWorldDimensionsPacket> getWorldDimensionsPacket;
 	getWorldDimensionsPacket->m_sizeX = world->getSizeX();
@@ -209,6 +211,7 @@ void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 		playerSpawnPacket->m_playerID = p.first;
 		playerSpawnPacket->m_xPos = p.second->getPosX();
 		playerSpawnPacket->m_yPos = p.second->getPosY();
+		strcpy_s(playerSpawnPacket->m_playerName, p.second->getName().c_str());
 
 		this->sendPacket(socket, playerSpawnPacket);
 	}
@@ -216,7 +219,7 @@ void MCServer::onPlayerConnect(nsocket_t socket, const char* name)
 	// Spawn player and update client info.
 	MCServerClient& clientInfo = this->getClient(socket);
 	clientInfo.m_playerID = m_currentPlayerID;
-	clientInfo.m_player = world->spawnRemotePlayer(m_currentPlayerID, world->getSizeX() / 2, 0);
+	clientInfo.m_player = world->spawnRemotePlayer(m_currentPlayerID, name, world->getSizeX() / 2, 0);
 
 	// Notify other players of spawn.
 	Packet<ServerPlayerSpawnPacket> playerSpawnPacket;

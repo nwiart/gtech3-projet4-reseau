@@ -49,8 +49,7 @@ void MCServerPacketHandler::handlePacket(nsocket_t client, const PacketBase& b, 
 				break;
 			}
 
-			std::string name = p->m_name;
-			server->onPlayerConnect(client, name.c_str());
+			server->onPlayerConnect(client, p->m_name);
 		}
 		break;
 

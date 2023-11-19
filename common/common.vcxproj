@@ -29,6 +29,7 @@
     <ClInclude Include="mc\network\server\MCServerClient.h" />
     <ClInclude Include="mc\network\server\MCServerPacketHandler.h" />
     <ClInclude Include="mc\network\server\world\WorldServer.h" />
+    <ClInclude Include="mc\player\Inventory.h" />
     <ClInclude Include="mc\player\Player.h" />
     <ClInclude Include="mc\registry\TileRegistry.h" />
     <ClInclude Include="mc\render\WorldRenderer.h" />
@@ -48,6 +49,7 @@
     <ClCompile Include="mc\network\server\MCServer.cpp" />
     <ClCompile Include="mc\network\server\MCServerPacketHandler.cpp" />
     <ClCompile Include="mc\network\server\world\WorldServer.cpp" />
+    <ClCompile Include="mc\player\Inventory.cpp" />
     <ClCompile Include="mc\player\Player.cpp" />
     <ClCompile Include="mc\registry\TileRegistry.cpp" />
     <ClCompile Include="mc\world\World.cpp" />
@@ -85,11 +87,11 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -157,8 +159,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SFML_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)SFML-2.6.1\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

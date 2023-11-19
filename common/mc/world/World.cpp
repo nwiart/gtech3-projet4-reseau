@@ -44,19 +44,23 @@ World::~World()
 
 void World::spawnLocalPlayer(int playerID)
 {
+	extern std::string localPlayerName;
+
 	m_localPlayer = new Player();
 	m_localPlayer->teleport(this->m_sizeX / 2, 0);
-	//m_localPlayer->id =;
+	m_localPlayer->m_id = playerID;
+	m_localPlayer->m_name = localPlayerName;
 
 	m_players.insert(std::pair<int, Player*>(playerID, m_localPlayer));
 	m_localPlayer->m_world = this;
 }
 
-Player* World::spawnRemotePlayer(int playerID, int xPos, int yPos)
+Player* World::spawnRemotePlayer(int playerID, const char* name, int xPos, int yPos)
 {
 	Player* player = new Player();
 	player->teleport(xPos, yPos);
-	//player->id =;
+	player->m_id = playerID;
+	player->m_name = name;
 
 	m_players.insert(std::pair<int, Player*>(playerID, player));
 	player->m_world = this;

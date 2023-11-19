@@ -16,14 +16,15 @@ using namespace std;
 
 MCClient* MCClient::m_instance = 0;
 
-string name;
+string localPlayerName = "TheVid";
+
 
 int MCClient::main()
 {
 	// Ask for IP and name.
 	string stringip;
 
-	cout << "Enter your name : "; getline(cin, name);
+	cout << "Enter your name : "; getline(cin, localPlayerName);
 	cout << "Enter server IP : "; getline(cin, stringip);
 
 
@@ -62,6 +63,7 @@ MCClient::MCClient(const char* windowTitle)
 	m_instance = this;
 
 	m_windowTitle = windowTitle;
+	m_frame = 0;
 }
 
 MCClient::~MCClient()
@@ -75,13 +77,12 @@ void MCClient::run()
 	m_window.create(sf::VideoMode(640, 640), m_windowTitle.c_str(), sf::Style::Close);
 	m_window.setVerticalSyncEnabled(true);
 	m_window.setKeyRepeatEnabled(false);
+	m_window.setFramerateLimit(60);
 
-	sf::Font f;
-	f.loadFromFile("C:/Windows/Fonts/consola.ttf");
-	f.setSmooth(false);
+	m_font.loadFromFile("C:/Windows/Fonts/consola.ttf");
+	m_font.setSmooth(false);
 
 	// Main loop.
-	int frame = 0;
 	while (m_window.isOpen())
 	{
 		// Window events.
@@ -109,69 +110,9 @@ void MCClient::run()
 		}
 
 		// Render.
-		m_window.clear();
+		this->render();
 
-		Player* player = MC::getInstance().getLocalPlayer();
-		sf::View view;
-		view.setSize(sf::Vector2f(20.0F, -20.0F));
-		view.setCenter(player ? sf::Vector2f(player->getPosX() + 0.5F, player->getPosY() + 0.5F) : sf::Vector2f(7.5F, 15.5F));
-		m_window.setView(view);
-
-		World* world = MC::getInstance().getLocalWorld();
-
-		for (int y = max(0, player->getPosY() - 10); y < min(world->getSizeY(), player->getPosY() + 11); y++) {
-
-			for (int x = max(0, player->getPosX() - 10); x < min(world->getSizeX(), player->getPosX() + 11); x++) {
-
-				const World::Tile* tiles = world->getTiles() + y * world->getSizeX() + x;
-
-				uint16_t tileID = tiles->m_material;
-				uint16_t itemID = tiles->m_item;
-
-				if (tileID) {
-					sf::Color c = tiles->m_broken ? TileRegistry::getTile(tileID).getBrokenColor() : TileRegistry::getTile(tileID).getColor();
-
-					sf::RectangleShape r;
-					r.setSize(sf::Vector2f(1, 1));
-					r.setFillColor(c);
-					r.setPosition(sf::Vector2f(x, y));
-					m_window.draw(r);
-				}
-
-				if (itemID && tiles->m_broken) {
-					sf::RectangleShape r;
-					r.setSize(sf::Vector2f(0.6F, 0.25F));
-					r.setOrigin(r.getSize() * 0.5F);
-					r.setFillColor(sf::Color(200, 200, 200));
-					r.setPosition(sf::Vector2f(x + 0.5F, y + 0.5F + sin(frame * 0.0166F * 3.2F)*0.2F));
-					m_window.draw(r);
-				}
-
-				tiles++;
-			}
-		}
-
-		for (const std::pair<int, Player*>& pl : world->getPlayers()) {
-			Player* p = pl.second;
-
-			// Player rect.
-			sf::RectangleShape r;
-			r.setSize(sf::Vector2f(0.6F, 0.6F));
-			r.setOrigin(r.getSize() * 0.5F);
-			r.setFillColor(sf::Color::White);
-			r.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 0.5F));
-			m_window.draw(r);
-
-			// Player name.
-			sf::Text t("Thing", f, 12);
-			t.setScale(sf::Vector2f(1.0F, -1.0F) / 16.0F);
-			t.setOrigin(t.getLocalBounds().getSize() * 0.5F);
-			t.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 2.0F));
-			m_window.draw(t);
-		}
-		
-		m_window.display();
-		frame++;
+		m_frame++;
 	}
 
 	// TODO : clean exit.
@@ -179,6 +120,79 @@ void MCClient::run()
 
 	network_shutdown_client(m_serverSocket);
 }
+
+void MCClient::render()
+{
+	m_window.clear();
+
+	Player* player = MC::getInstance().getLocalPlayer();
+
+	if (!player) {
+		m_window.display();
+		return;
+	}
+	
+	sf::View view;
+	view.setSize(sf::Vector2f(20.0F, -20.0F));
+	view.setCenter(player ? sf::Vector2f(player->getPosX() + 0.5F, player->getPosY() + 0.5F) : sf::Vector2f(7.5F, 15.5F));
+	m_window.setView(view);
+
+	World* world = MC::getInstance().getLocalWorld();
+
+	for (int y = max(0, player->getPosY() - 10); y < min(world->getSizeY(), player->getPosY() + 11); y++) {
+
+		for (int x = max(0, player->getPosX() - 10); x < min(world->getSizeX(), player->getPosX() + 11); x++) {
+
+			const World::Tile* tiles = world->getTiles() + y * world->getSizeX() + x;
+
+			uint16_t tileID = tiles->m_material;
+			uint16_t itemID = tiles->m_item;
+
+			if (tileID) {
+				sf::Color c = tiles->m_broken ? TileRegistry::getTile(tileID).getBrokenColor() : TileRegistry::getTile(tileID).getColor();
+
+				sf::RectangleShape r;
+				r.setSize(sf::Vector2f(1, 1));
+				r.setFillColor(c);
+				r.setPosition(sf::Vector2f(x, y));
+				m_window.draw(r);
+			}
+
+			if (itemID && tiles->m_broken) {
+				sf::RectangleShape r;
+				r.setSize(sf::Vector2f(0.6F, 0.25F));
+				r.setOrigin(r.getSize() * 0.5F);
+				r.setFillColor(sf::Color(200, 200, 200));
+				r.setPosition(sf::Vector2f(x + 0.5F, y + 0.5F + sin(m_frame * 0.0166F * 3.2F) * 0.2F));
+				m_window.draw(r);
+			}
+
+			tiles++;
+		}
+	}
+
+	for (const std::pair<int, Player*>& pl : world->getPlayers()) {
+		Player* p = pl.second;
+
+		// Player rect.
+		sf::RectangleShape r;
+		r.setSize(sf::Vector2f(0.6F, 0.6F));
+		r.setOrigin(r.getSize() * 0.5F);
+		r.setFillColor(sf::Color::White);
+		r.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 0.5F));
+		m_window.draw(r);
+
+		// Player name.
+		sf::Text t(p->getName(), m_font, 12);
+		t.setScale(sf::Vector2f(1.0F, -1.0F) / 16.0F);
+		t.setOrigin(t.getLocalBounds().getSize() * 0.5F);
+		t.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 2.0F));
+		m_window.draw(t);
+	}
+
+	m_window.display();
+}
+
 
 void MCClient::connect(const char* stringip, uint16_t port)
 {
@@ -207,7 +221,7 @@ int MCClient::connectThreadMain(void* param)
 
 	// Send join information.
 	Packet<ClientJoinPacket> packet;
-	memcpy(packet->m_name, name.c_str(), name.size() + 1);
+	memcpy(packet->m_name, localPlayerName.c_str(), localPlayerName.size() + 1);
 	packet->m_isSpectator = true;
 	client->sendPacket(packet);
 	

@@ -3,6 +3,7 @@
 #include <string>
 
 class World;
+class Inventory;
 
 
 
@@ -13,6 +14,7 @@ class Player
 public:
 
 	Player();
+	~Player();
 
 	void move(int dx, int dy);
 	void teleport(int x, int y);
@@ -22,7 +24,10 @@ public:
 
 	inline World* getWorld() const { return m_world; }
 
+	inline Inventory* getInventory() const { return m_inventory; }
+
 	inline const std::string& getName() const { return m_name; }
+	inline int getID() const { return m_id; }
 
 	inline int getPosX() const { return m_xPos; }
 	inline int getPosY() const { return m_yPos; }
@@ -34,7 +39,10 @@ private:
 
 	World* m_world;
 
+	Inventory* m_inventory;
+
 	std::string m_name;
+	int m_id;
 
 	int m_xPos;
 	int m_yPos;

@@ -26,7 +26,7 @@ public:
 	~World();
 
 	void spawnLocalPlayer(int playerID);
-	Player* spawnRemotePlayer(int playerID, int xPos, int yPos);
+	Player* spawnRemotePlayer(int playerID, const char* name, int xPos, int yPos);
 
 	uint16_t getTileAt(int x, int y) const;
 	uint16_t getItemAt(int x, int y) const;

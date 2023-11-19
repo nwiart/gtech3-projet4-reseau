@@ -35,16 +35,21 @@ private:
 
 	static int connectThreadMain(void* param);
 
+	void render();
+
 
 private:
 
 	static MCClient* m_instance;
 
 	sf::RenderWindow m_window;
+	sf::Font m_font;
 
 	thread m_connectThread;
 	nsocket_t m_serverSocket;
 	uint32_t m_serverIP4;
 
 	std::string m_windowTitle;
+
+	int m_frame;
 };

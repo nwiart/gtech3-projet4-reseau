@@ -2,6 +2,7 @@
 #include "Player.h"
 
 #include "mc/world/World.h"
+#include "mc/player/Inventory.h"
 
 #include "mc/network/client/MCClient.h"
 #include "Packet.h"
@@ -11,7 +12,14 @@
 Player::Player()
 	: m_xPos(0), m_yPos(0), m_world(0)
 {
+	m_inventory = new Inventory();
+}
 
+Player::~Player()
+{
+	if (m_inventory) {
+		delete m_inventory;
+	}
 }
 
 void Player::move(int dx, int dy)

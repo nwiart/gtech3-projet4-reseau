@@ -2,7 +2,10 @@
 #include "MCClientPacketHandler.h"
 
 #include "mc/network/client/MCClient.h"
+
 #include "mc/world/World.h"
+#include "mc/player/Player.h"
+#include "mc/player/Inventory.h"
 
 #include <iostream>
 
@@ -59,7 +62,7 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 			std::cout << "Server sent PlayerSpawn\n";
 
 			const Packet<ServerPlayerSpawnPacket>& p = (const Packet<ServerPlayerSpawnPacket>&) b;
-			world->spawnRemotePlayer(p->m_playerID, p->m_xPos, p->m_yPos);
+			world->spawnRemotePlayer(p->m_playerID, p->m_playerName, p->m_xPos, p->m_yPos);
 		}
 		break;
 
@@ -95,6 +98,23 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 			World* world = MC::getInstance().getLocalWorld();
 			world->setItemAt(p->m_item, p->m_posX, p->m_posY);
 			world->breakTile(p->m_posX, p->m_posY);
+		}
+		break;
+
+	case ServerPackets::PlayerPickupItem:
+		{
+			std::cout << "Server sent PlayerPickupItem\n";
+
+			const Packet<ServerPlayerPickupItemPacket>& p = (const Packet<ServerPlayerPickupItemPacket>&) b;
+
+			World* world = MC::getInstance().getLocalWorld();
+			Player* player = MC::getInstance().getLocalPlayer();
+
+			if (p->m_playerID == player->getID()) {
+				uint16_t itemID = world->getItemAt(p->m_posX, p->m_posY);
+				player->getInventory()->addItem(itemID, 1);
+			}
+			world->setItemAt(0, p->m_posX, p->m_posY);
 		}
 		break;
 

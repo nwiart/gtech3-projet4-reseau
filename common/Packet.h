@@ -74,6 +74,7 @@ struct ServerPackets : kdEnum<uint32_t>
 		GameRestart,        // Sent when the game restarts.
 		PlayerMove,         // Sent when someone makes a move.
 		BlockBreak,
+		PlayerPickupItem,
 		Disconnect,
 	};
 };
@@ -185,6 +186,18 @@ struct ServerBlockBreakPacket
 
 		/// Optional item revealed inside the block. Set to 0 for none.
 	uint16_t m_item;
+};
+
+struct ServerPlayerPickupItemPacket
+{
+	static const uint32_t ID = ServerPackets::PlayerPickupItem;
+
+		/// Player ID.
+	int m_playerID;
+
+		/// Block position.
+	uint16_t m_posX;
+	uint16_t m_posY;
 };
 
 struct ServerDisconnectPacket
