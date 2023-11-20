@@ -31,7 +31,7 @@ void Player::move(int dx, int dy)
 		if (m_world->isTileBroken(m_xPos + dx, m_yPos)) {
 			m_xPos += dx;
 		}
-		else {
+		else if (m_world->canBreakTile(m_xPos + dx, m_yPos)) {
 			m_world->breakTile(m_xPos + dx, m_yPos);
 		}
 	}
@@ -39,7 +39,7 @@ void Player::move(int dx, int dy)
 		if (m_world->isTileBroken(m_xPos, m_yPos + dy)) {
 			m_yPos += dy;
 		}
-		else {
+		else if (m_world->canBreakTile(m_xPos, m_yPos + dy)) {
 			m_world->breakTile(m_xPos, m_yPos + dy);
 		}
 	}

@@ -31,6 +31,9 @@ public:
 	uint16_t getTileAt(int x, int y) const;
 	uint16_t getItemAt(int x, int y) const;
 	bool isTileBroken(int x, int y) const;
+	bool canBreakTile(int x, int y) const;
+
+	inline bool isOutOfBounds(int x, int y) const { return x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY; }
 
 	virtual void movePlayer(const MCServerClient& player, int dx, int dy);
 	virtual void breakTile(int x, int y);

@@ -8,7 +8,11 @@ bool packet_send(nsocket_t socket, const PacketBase& data)
 {
 	int remaining = sizeof(PacketBase) + data.m_size;
 	while (remaining > 0) {
-		remaining -= send(socket, (const char*) &data, remaining, 0);
+		int sent = send(socket, (const char*)&data, remaining, 0);
+		if (sent == -1) {
+			return false;
+		}
+		remaining -= sent;
 	}
 
 	return true;

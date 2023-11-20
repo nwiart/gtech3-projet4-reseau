@@ -22,6 +22,9 @@
     <ClInclude Include="ConnectionDenialReason.h" />
     <ClInclude Include="DisconnectReason.h" />
     <ClInclude Include="enum.h" />
+    <ClInclude Include="mc\gui\Gui.h" />
+    <ClInclude Include="mc\gui\GuiMainMenu.h" />
+    <ClInclude Include="mc\gui\InputText.h" />
     <ClInclude Include="mc\MC.h" />
     <ClInclude Include="mc\network\client\MCClient.h" />
     <ClInclude Include="mc\network\client\MCClientPacketHandler.h" />
@@ -31,6 +34,7 @@
     <ClInclude Include="mc\network\server\world\WorldServer.h" />
     <ClInclude Include="mc\player\Inventory.h" />
     <ClInclude Include="mc\player\Player.h" />
+    <ClInclude Include="mc\registry\ItemRegistry.h" />
     <ClInclude Include="mc\registry\TileRegistry.h" />
     <ClInclude Include="mc\render\WorldRenderer.h" />
     <ClInclude Include="mc\world\World.h" />
@@ -43,6 +47,8 @@
   <ItemGroup>
     <ClCompile Include="ConnectionDenialReason.cpp" />
     <ClCompile Include="DisconnectReason.cpp" />
+    <ClCompile Include="mc\gui\GuiMainMenu.cpp" />
+    <ClCompile Include="mc\gui\InputText.cpp" />
     <ClCompile Include="mc\MC.cpp" />
     <ClCompile Include="mc\network\client\MCClient.cpp" />
     <ClCompile Include="mc\network\client\MCClientPacketHandler.cpp" />
@@ -51,6 +57,7 @@
     <ClCompile Include="mc\network\server\world\WorldServer.cpp" />
     <ClCompile Include="mc\player\Inventory.cpp" />
     <ClCompile Include="mc\player\Player.cpp" />
+    <ClCompile Include="mc\registry\ItemRegistry.cpp" />
     <ClCompile Include="mc\registry\TileRegistry.cpp" />
     <ClCompile Include="mc\world\World.cpp" />
     <ClCompile Include="mc\world\WorldGenerator.cpp" />

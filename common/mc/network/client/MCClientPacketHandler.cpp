@@ -13,6 +13,16 @@
 static World* world = 0;
 
 
+void MCClientPacketHandler::handleClose(nsocket_t socket, void* param)
+{
+	MCClient* client = reinterpret_cast<MCClient*>(param);
+
+	client->onServerClose();
+
+	MC::getInstance().openLocalWorld(0);
+	delete world;
+}
+
 void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, void* param)
 {
 	MCClient* client = reinterpret_cast<MCClient*>(param);

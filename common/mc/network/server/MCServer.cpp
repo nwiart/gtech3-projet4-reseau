@@ -74,7 +74,7 @@ void MCServer::host()
 void MCServer::run()
 {
 	// Create dummy world and set current.
-	WorldServer* world = new WorldServer(31, 47, this);
+	WorldServer* world = new WorldServer(31, 63, this);
 	MC::getInstance().openWorld(0, world);
 
 	if (!m_headless) {
@@ -247,7 +247,7 @@ int MCServer::adminClientThreadMain(void* param)
 
 	server->m_adminClient = new MCClient("MC Server");
 
-	server->m_adminClient->connect("127.0.0.1", MC::SERVER_PORT);
+	//server->m_adminClient->connect("127.0.0.1", MC::SERVER_PORT);
 	server->m_adminClient->run();
 
 	delete server->m_adminClient;

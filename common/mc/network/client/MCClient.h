@@ -11,6 +11,8 @@
 
 class MCClient
 {
+	friend class MCClientPacketHandler;
+
 public:
 
 		/// Client application's main entry point.
@@ -35,6 +37,8 @@ private:
 
 	static int connectThreadMain(void* param);
 
+	void onServerClose();
+
 	void render();
 
 
@@ -43,7 +47,6 @@ private:
 	static MCClient* m_instance;
 
 	sf::RenderWindow m_window;
-	sf::Font m_font;
 
 	thread m_connectThread;
 	nsocket_t m_serverSocket;

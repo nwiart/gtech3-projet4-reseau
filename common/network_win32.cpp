@@ -111,7 +111,8 @@ static LRESULT CALLBACK ServerWinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 //
 
 // Client globals.
-static PacketHandler g_clientHandler = 0;
+static PacketHandler g_clientPacketHandler = 0;
+static CloseHandler g_clientCloseHandler = 0;
 static void* g_clientHandlerParam = 0;
 static HWND g_clientHwnd = (HWND) INVALID_HANDLE_VALUE;
 
@@ -128,6 +129,8 @@ static LRESULT CALLBACK ClientWinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 			{
 			case FD_CLOSE:
 				{
+					g_clientCloseHandler(socket, g_clientHandlerParam);
+
 					closesocket(socket);
 				}
 				break;
@@ -137,7 +140,7 @@ static LRESULT CALLBACK ClientWinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM
 					char buf[PACKET_MAX_SIZE];
 					packet_recv(socket, buf);
 
-					g_clientHandler(socket, *((const PacketBase*) buf), g_clientHandlerParam);
+					g_clientPacketHandler(socket, *((const PacketBase*) buf), g_clientHandlerParam);
 				}
 				break;
 			}
@@ -256,7 +259,7 @@ void network_server_poll_events()
 
 
 
-nsocket_t network_setup_client4(uint32_t addr, uint16_t port, PacketHandler h, void* handlerParam)
+nsocket_t network_setup_client4(uint32_t addr, uint16_t port, CloseHandler closeHandler, PacketHandler packetHandler, void* handlerParam)
 {
 	// Convert to string.
 	char port_str[6] = { 0 };
@@ -279,7 +282,8 @@ nsocket_t network_setup_client4(uint32_t addr, uint16_t port, PacketHandler h, v
 
 	freeaddrinfo(result);
 
-	g_clientHandler = h;
+	g_clientPacketHandler = packetHandler;
+	g_clientCloseHandler = closeHandler;
 	g_clientHandlerParam = handlerParam;
 
 	g_clientHwnd = CreateWindow(g_wndClientClassName, "", 0, 0, 0, 100, 100, 0, 0, GetModuleHandle(0), 0);

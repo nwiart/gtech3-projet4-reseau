@@ -21,6 +21,10 @@
     <ClInclude Include="mc\network\server\world\WorldServer.h" />
     <ClInclude Include="mc\world\WorldGenerator.h" />
     <ClInclude Include="mc\player\Inventory.h" />
+    <ClInclude Include="mc\registry\ItemRegistry.h" />
+    <ClInclude Include="mc\gui\GuiMainMenu.h" />
+    <ClInclude Include="mc\gui\Gui.h" />
+    <ClInclude Include="mc\gui\InputText.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="network_win32.cpp" />
@@ -40,5 +44,8 @@
     <ClCompile Include="mc\registry\TileRegistry.cpp" />
     <ClCompile Include="mc\world\WorldGenerator.cpp" />
     <ClCompile Include="mc\player\Inventory.cpp" />
+    <ClCompile Include="mc\registry\ItemRegistry.cpp" />
+    <ClCompile Include="mc\gui\GuiMainMenu.cpp" />
+    <ClCompile Include="mc\gui\InputText.cpp" />
   </ItemGroup>
 </Project>

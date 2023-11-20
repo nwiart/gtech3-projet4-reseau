@@ -8,6 +8,8 @@
 
 #include "mc/network/client/MCClientPacketHandler.h"
 
+#include "mc/gui/GuiMainMenu.h"
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -17,6 +19,7 @@ using namespace std;
 MCClient* MCClient::m_instance = 0;
 
 string localPlayerName = "TheVid";
+
 
 
 int MCClient::main()
@@ -71,6 +74,10 @@ MCClient::~MCClient()
 
 }
 
+
+
+GuiMainMenu* m;
+
 void MCClient::run()
 {
 	// Create window.
@@ -79,8 +86,8 @@ void MCClient::run()
 	m_window.setKeyRepeatEnabled(false);
 	m_window.setFramerateLimit(60);
 
-	m_font.loadFromFile("C:/Windows/Fonts/consola.ttf");
-	m_font.setSmooth(false);
+	m = new GuiMainMenu();
+
 
 	// Main loop.
 	while (m_window.isOpen())
@@ -101,7 +108,13 @@ void MCClient::run()
 				case sf::Keyboard::S: case sf::Keyboard::Down:  MC::getInstance().getLocalPlayer()->move( 0, -1); break;
 				case sf::Keyboard::D: case sf::Keyboard::Right: MC::getInstance().getLocalPlayer()->move( 1,  0); break;
 				case sf::Keyboard::Q: case sf::Keyboard::Left:  MC::getInstance().getLocalPlayer()->move(-1,  0); break;
+
+				case sf::Keyboard::Tab: break;
 				}
+				break;
+
+			case sf::Event::TextEntered:
+				
 				break;
 
 			case sf::Event::MouseButtonReleased:
@@ -127,68 +140,73 @@ void MCClient::render()
 
 	Player* player = MC::getInstance().getLocalPlayer();
 
-	if (!player) {
-		m_window.display();
-		return;
-	}
+	if (player)
+	{
+		sf::View view;
+		view.setSize(sf::Vector2f(20.0F, -20.0F));
+		view.setCenter(player ? sf::Vector2f(player->getPosX() + 0.5F, player->getPosY() + 0.5F) : sf::Vector2f(7.5F, 15.5F));
+		m_window.setView(view);
+
+		World* world = MC::getInstance().getLocalWorld();
+
+		for (int y = max(0, player->getPosY() - 10); y < min(world->getSizeY(), player->getPosY() + 11); y++) {
+
+			for (int x = max(0, player->getPosX() - 10); x < min(world->getSizeX(), player->getPosX() + 11); x++) {
+
+				const World::Tile* tiles = world->getTiles() + y * world->getSizeX() + x;
+
+				uint16_t tileID = tiles->m_material;
+				uint16_t itemID = tiles->m_item;
+
+				if (tileID) {
+					sf::Color c = tiles->m_broken ? TileRegistry::getTile(tileID).getBrokenColor() : TileRegistry::getTile(tileID).getColor();
+
+					sf::RectangleShape r;
+					r.setSize(sf::Vector2f(1, 1));
+					r.setFillColor(c);
+					r.setPosition(sf::Vector2f(x, y));
+					m_window.draw(r);
+				}
+
+				if (itemID && tiles->m_broken) {
+					sf::RectangleShape r;
+					r.setSize(sf::Vector2f(0.6F, 0.25F));
+					r.setOrigin(r.getSize() * 0.5F);
+					r.setFillColor(sf::Color(200, 200, 200));
+					r.setPosition(sf::Vector2f(x + 0.5F, y + 0.5F + sin(m_frame * 0.0166F * 3.2F) * 0.2F));
+					m_window.draw(r);
+				}
+
+				tiles++;
+			}
+		}
 	
-	sf::View view;
-	view.setSize(sf::Vector2f(20.0F, -20.0F));
-	view.setCenter(player ? sf::Vector2f(player->getPosX() + 0.5F, player->getPosY() + 0.5F) : sf::Vector2f(7.5F, 15.5F));
-	m_window.setView(view);
+		for (const std::pair<int, Player*>& pl : world->getPlayers()) {
+			Player* p = pl.second;
 
-	World* world = MC::getInstance().getLocalWorld();
+			// Player rect.
+			sf::RectangleShape r;
+			r.setSize(sf::Vector2f(0.6F, 0.6F));
+			r.setOrigin(r.getSize() * 0.5F);
+			r.setFillColor(sf::Color::White);
+			r.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 0.5F));
+			m_window.draw(r);
 
-	for (int y = max(0, player->getPosY() - 10); y < min(world->getSizeY(), player->getPosY() + 11); y++) {
-
-		for (int x = max(0, player->getPosX() - 10); x < min(world->getSizeX(), player->getPosX() + 11); x++) {
-
-			const World::Tile* tiles = world->getTiles() + y * world->getSizeX() + x;
-
-			uint16_t tileID = tiles->m_material;
-			uint16_t itemID = tiles->m_item;
-
-			if (tileID) {
-				sf::Color c = tiles->m_broken ? TileRegistry::getTile(tileID).getBrokenColor() : TileRegistry::getTile(tileID).getColor();
-
-				sf::RectangleShape r;
-				r.setSize(sf::Vector2f(1, 1));
-				r.setFillColor(c);
-				r.setPosition(sf::Vector2f(x, y));
-				m_window.draw(r);
-			}
-
-			if (itemID && tiles->m_broken) {
-				sf::RectangleShape r;
-				r.setSize(sf::Vector2f(0.6F, 0.25F));
-				r.setOrigin(r.getSize() * 0.5F);
-				r.setFillColor(sf::Color(200, 200, 200));
-				r.setPosition(sf::Vector2f(x + 0.5F, y + 0.5F + sin(m_frame * 0.0166F * 3.2F) * 0.2F));
-				m_window.draw(r);
-			}
-
-			tiles++;
+			// Player name.
+			sf::Text t(p->getName(), MC::getInstance().getGlobalFont(), 12);
+			t.setScale(sf::Vector2f(1.0F, -1.0F) / 16.0F);
+			t.setOrigin(t.getLocalBounds().getSize() * 0.5F);
+			t.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 2.0F));
+			m_window.draw(t);
 		}
 	}
 
-	for (const std::pair<int, Player*>& pl : world->getPlayers()) {
-		Player* p = pl.second;
+	sf::View view;
+	view.setCenter(sf::Vector2f(10.0F, 10.0F) * 16.0F);
+	view.setSize(sf::Vector2f(20.0F, 20.0F) * 16.0F);
+	m_window.setView(view);
 
-		// Player rect.
-		sf::RectangleShape r;
-		r.setSize(sf::Vector2f(0.6F, 0.6F));
-		r.setOrigin(r.getSize() * 0.5F);
-		r.setFillColor(sf::Color::White);
-		r.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 0.5F));
-		m_window.draw(r);
-
-		// Player name.
-		sf::Text t(p->getName(), m_font, 12);
-		t.setScale(sf::Vector2f(1.0F, -1.0F) / 16.0F);
-		t.setOrigin(t.getLocalBounds().getSize() * 0.5F);
-		t.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 2.0F));
-		m_window.draw(t);
-	}
+	m->render(m_window);
 
 	m_window.display();
 }
@@ -217,7 +235,7 @@ int MCClient::connectThreadMain(void* param)
 {
 	MCClient* client = reinterpret_cast<MCClient*>(param);
 
-	client->m_serverSocket = network_setup_client4(client->m_serverIP4, MC::SERVER_PORT, &MCClientPacketHandler::handlePacket, client);
+	client->m_serverSocket = network_setup_client4(client->m_serverIP4, MC::SERVER_PORT, &MCClientPacketHandler::handleClose, &MCClientPacketHandler::handlePacket, client);
 
 	// Send join information.
 	Packet<ClientJoinPacket> packet;
@@ -228,4 +246,9 @@ int MCClient::connectThreadMain(void* param)
 	network_client_poll_events();
 
 	return 0;
+}
+
+void MCClient::onServerClose()
+{
+	
 }

@@ -31,7 +31,7 @@ void network_shutdown_server(nsocket_t socket);
 
 
 // Client-side.
-nsocket_t network_setup_client4(uint32_t addr, uint16_t port, PacketHandler h, void* handlerParam);
+nsocket_t network_setup_client4(uint32_t addr, uint16_t port, CloseHandler closeHandler, PacketHandler packetHandler, void* handlerParam);
 
 void network_shutdown_client(nsocket_t socket);
 

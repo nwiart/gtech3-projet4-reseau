@@ -37,8 +37,14 @@ World::World(int sizeX, int sizeY, bool generate)
 
 World::~World()
 {
+	// Destroy tiles.
 	if (m_tiles) {
 		free(m_tiles);
+	}
+
+	// Destroy players (including local player).
+	for (const std::pair<int, Player*>& pl : m_players) {
+		delete pl.second;
 	}
 }
 
@@ -70,14 +76,14 @@ Player* World::spawnRemotePlayer(int playerID, const char* name, int xPos, int y
 
 uint16_t World::getTileAt(int x, int y) const
 {
-	if (x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY) return 0;
+	if (this->isOutOfBounds(x, y)) return 0;
 
 	return m_tiles[y * m_sizeX + x].m_material;
 }
 
 uint16_t World::getItemAt(int x, int y) const
 {
-	if (x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY) return 0;
+	if (this->isOutOfBounds(x, y)) return 0;
 
 	return m_tiles[y * m_sizeX + x].m_item;
 }
@@ -85,9 +91,16 @@ uint16_t World::getItemAt(int x, int y) const
 bool World::isTileBroken(int x, int y) const
 {
 	// Make borders solid.
-	if (x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY) return false;
+	if (this->isOutOfBounds(x, y)) return false;
 
 	return m_tiles[y * m_sizeX + x].m_broken;
+}
+
+bool World::canBreakTile(int x, int y) const
+{
+	if (this->isOutOfBounds(x, y)) return false;
+
+	return m_tiles[y * m_sizeX + x].m_material == 1;
 }
 
 void World::movePlayer(const MCServerClient& player, int dx, int dy)
