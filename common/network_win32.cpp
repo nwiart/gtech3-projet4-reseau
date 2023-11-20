@@ -235,7 +235,7 @@ nsocket_t network_setup_web_server(uint16_t port)
 	hints.ai_protocol = IPPROTO_TCP;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo("127.0.0.1", port_str, &hints, &result);
+	getaddrinfo(0, port_str, &hints, &result);
 	nsocket_t listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	bind(listenSocket, result->ai_addr, result->ai_addrlen);
 

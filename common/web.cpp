@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 #include <string>
 
 using namespace std;
@@ -16,7 +17,41 @@ using namespace std;
 
 static nsocket_t g_webSocket;
 
-static string g_webPage;
+static string read(istream& stream, uint32_t count)
+{
+	vector<char> result(count + 1, 0);
+	stream.read(&result[0], count);
+
+	return string(result.data());
+}
+
+static void make_page(std::string& out, const char* buf)
+{
+	char c;
+
+	while ((c = *buf) && c) {
+
+		if (c == '$') {
+			buf++;
+
+			string identifier;
+
+			while ((c = *buf) && (isalnum(c))) {
+				identifier += c;
+				buf++;
+			}
+
+			if (identifier.empty()) out += '$';
+			else if (identifier == "onlinePlayers") out += "3";
+			else if (identifier == "random") out += std::to_string(rand());
+		}
+
+		else {
+			out += c;
+			buf++;
+		}
+	}
+}
 
 
 
@@ -31,19 +66,23 @@ static int pageSendThread(void*)
 		recv(incoming, a, 4096, 0);
 
 		// Compose page.
-		stringstream buf;
+		string page;
 		{
-			ifstream f("index.html");
-		
-			buf <<
+			page =
 				"HTTP/1.1 200 OK\r\n"
 				"Content-Type: text/html\r\n"
 				"\r\n";
 
+
+			ifstream f("index.html");
+			stringstream buf;
 			buf << f.rdbuf();
+			string s = buf.str();
+
+			make_page(page, s.c_str());
 		}
 
-		send(incoming, buf.str().c_str(), buf.str().size(), 0);
+		send(incoming, page.c_str(), page.size(), 0);
 
 		// End of transfer.
 		closesocket(incoming);
@@ -52,18 +91,11 @@ static int pageSendThread(void*)
 	return 0;
 }
 
-thread t(pageSendThread);
-
+static thread t(pageSendThread);
 
 void web_start_server(uint16_t port)
 {
 	g_webSocket = network_setup_web_server(port);
-
-	ifstream f("index.html");
-	stringstream buf;
-	buf << f.rdbuf();
-
-	g_webPage = buf.str();
 
 	t.start();
 }
