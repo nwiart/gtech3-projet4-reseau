@@ -3,6 +3,9 @@
 #include "network.h"
 #include "thread.h"
 
+#include "mc/network/server/MCServer.h"
+#include "mc/player/Player.h"
+
 
 #include <WinSock2.h>
 #include <iostream>
@@ -25,38 +28,51 @@ static string read(istream& stream, uint32_t count)
 	return string(result.data());
 }
 
-static void make_page(std::string& out, const char* buf)
+static void make_page(std::string& out, const char* buf, MCServer* server)
 {
 	char c;
+	const char* p = buf;
 
 	while ((c = *buf) && c) {
 
 		if (c == '$') {
+			out += string(p, buf);
+
 			buf++;
 
 			string identifier;
-
 			while ((c = *buf) && (isalnum(c))) {
 				identifier += c;
 				buf++;
 			}
 
 			if (identifier.empty()) out += '$';
-			else if (identifier == "onlinePlayers") out += "3";
+			else if (identifier == "onlinePlayers") out += std::to_string(server->getClients().size());
+			else if (identifier == "maximumPlayers") out += "3";
+			else if (identifier == "playerList") {
+				for (const MCServer::ClientListElement& e : server->getClients()) out += e.second.getPlayer()->getName() + '\n';
+			}
 			else if (identifier == "random") out += std::to_string(rand());
+
+			p = buf;
 		}
 
 		else {
-			out += c;
 			buf++;
 		}
+	}
+
+	if (p != buf) {
+		out += string(p, buf);
 	}
 }
 
 
 
-static int pageSendThread(void*)
+static int pageSendThread(void* param)
 {
+	MCServer* server = reinterpret_cast<MCServer*>(param);
+
 	while (true)
 	{
 		// Get incoming HTTP request.
@@ -79,7 +95,7 @@ static int pageSendThread(void*)
 			buf << f.rdbuf();
 			string s = buf.str();
 
-			make_page(page, s.c_str());
+			make_page(page, s.c_str(), server);
 		}
 
 		send(incoming, page.c_str(), page.size(), 0);
@@ -91,11 +107,10 @@ static int pageSendThread(void*)
 	return 0;
 }
 
-static thread t(pageSendThread);
-
-void web_start_server(uint16_t port)
+void web_start_server(uint16_t port, void* param)
 {
 	g_webSocket = network_setup_web_server(port);
 
+	static thread t(pageSendThread, param);
 	t.start();
 }

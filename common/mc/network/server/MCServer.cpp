@@ -67,7 +67,7 @@ void MCServer::host()
 	cout << "Now listening on " << MC::SERVER_PORT << "...\n";
 
 	// Start web server.
-	web_start_server(MC::WEB_PORT);
+	web_start_server(MC::WEB_PORT, this);
 	cout << "Web server broadcasting on " << MC::WEB_PORT << "...\n";
 }
 
@@ -247,7 +247,7 @@ int MCServer::adminClientThreadMain(void* param)
 
 	server->m_adminClient = new MCClient("MC Server");
 
-	//server->m_adminClient->connect("127.0.0.1", MC::SERVER_PORT);
+	server->m_adminClient->connect("127.0.0.1", MC::SERVER_PORT);
 	server->m_adminClient->run();
 
 	delete server->m_adminClient;

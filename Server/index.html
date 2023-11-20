@@ -3,7 +3,51 @@
 	<head>
 		<title>MC Project Server</title>
 		<style>
-			body { background: #303030; color: white; font-family: Consolas; margin: 24px; }
+			html, body {
+				background: #303030;
+				color: white;
+				font-family: Consolas;
+
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+			}
+
+			h1 {
+				margin: 16px;
+				margin-bottom: 0;
+			}
+
+			h2 {
+				margin-top: 0;
+			}
+
+			textarea {
+				background: black;
+				color: white;
+			}
+
+			.global {
+				display: flex;
+				width: 100%;
+				flex-grow: 1;
+			}
+
+			.global .left-pane {
+				width: 70%;
+			}
+
+			.global .right-pane {
+				width: 30%;
+			}
+
+			.global .left-pane, .global .right-pane {
+				background: #202020;
+				border-radius: 16px;
+				margin: 16px;
+				padding: 16px;
+				box-shadow: #111 0px 0px 10px, inset #666 0px 0px 10px;
+			}
 		</style>
 	</head>
 
@@ -14,18 +58,28 @@
 			JavaScript is required to receive server information.
 		</noscript>
 
-		<p>
-			Online players : $onlinePlayers / 0
-		</p>
+		<div class="global">
+			<div class="left-pane">
+				<textarea readonly style="display: block"></textarea>
 
-		<p>
-			Three random numbers :<br/>
-			$random $random $random
-		</p>
+				<input name="command" placeholder="Enter command..." />
+				<button>Submit</button>
+			</div>
 
-		<textarea style="display: block"></textarea>
-		<input name="command" placeholder="Enter command..." />
-		<button>Submit</button>
+			<div class="right-pane">
+				<h2>Online players</h2>
+				<p>
+					$onlinePlayers / $maximumPlayers
+				</p>
+
+				<textarea readonly>$playerList</textarea>
+
+				<p>
+					Three random numbers :<br/>
+					$random $random $random
+				</p>
+			</div>
+		</div>
 	</body>
 
 	<script>

@@ -7,6 +7,8 @@
 #include "DisconnectReason.h"
 
 #include <map>
+#include <unordered_map>
+#include <string>
 
 class MCClient;
 
@@ -15,6 +17,11 @@ class MCClient;
 class MCServer
 {
 	friend class MCServerPacketHandler;
+
+public:
+
+	typedef std::map<nsocket_t, MCServerClient> ClientList;
+	typedef std::pair<nsocket_t, MCServerClient> ClientListElement;
 
 public:
 
@@ -38,6 +45,8 @@ public:
 	void broadcastPacket(const PacketBase& b, nsocket_t socketExcept = -1);
 
 	const MCServerClient& getClient(nsocket_t socket) const;
+
+	inline const ClientList& getClients() const { return m_clients; }
 
 private:
 
@@ -67,10 +76,11 @@ private:
 
 	bool m_headless;
 
-	typedef std::map<nsocket_t, MCServerClient> ClientList;
-	typedef std::pair<nsocket_t, MCServerClient> ClientListElement;
 	ClientList m_clients;
 
 		/// Player ID increment.
 	int m_currentPlayerID;
+
+
+	std::map<std::string, std::string> m_serverConfig;
 };
