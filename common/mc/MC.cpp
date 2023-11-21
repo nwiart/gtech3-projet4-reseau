@@ -8,8 +8,6 @@
 
 MC* MC::m_instance = 0;
 
-static sf::Font g_font;
-
 
 
 MC::MC()
@@ -24,11 +22,6 @@ MC::MC()
 void MC::init()
 {
 	TileRegistry::init();
-
-	g_font.loadFromFile("C:/Windows/Fonts/consola.ttf");
-	g_font.setSmooth(false);
-
-	m_font = &g_font;
 }
 
 void MC::openWorld(World* localWorld, WorldServer* serverWorld)

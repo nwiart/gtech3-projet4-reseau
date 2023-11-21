@@ -1,11 +1,20 @@
 #pragma once
 
+#include "Gui.h"
+#include "CallbackFunc.h"
+
 #include <SFML/Graphics.hpp>
+
+#include <string>
 
 
 
 class InputText
 {
+public:
+
+	typedef void (Gui::*TextInputCallback)();
+
 public:
 
 	InputText();
@@ -15,9 +24,15 @@ public:
 	void setPosition(const sf::Vector2f& pos);
 	void setSize(const sf::Vector2f& size);
 
-	void onTextInput(uint32_t unicodeChar);
+	void setTextInputCallback(Gui* target, TextInputCallback func) { m_callback.set(target, func); }
 
-	const sf::String& getText() const { return m_text; }
+	template<typename Func>
+	inline void setTextInputCallback(Gui* target, Func func) { this->setTextInputCallback(target, static_cast<TextInputCallback>(func)); }
+
+
+	bool onTextInput(uint32_t unicodeChar);
+
+	std::string getText() const { return m_text.toAnsiString(); }
 
 	const sf::Vector2f& getPosition() const { return m_background.getPosition(); }
 	const sf::Vector2f& getSize() const { return m_background.getSize(); }
@@ -29,4 +44,6 @@ private:
 
 	sf::RectangleShape m_background;
 	sf::Text m_renderText;
+
+	CallbackFunc<TextInputCallback> m_callback;
 };

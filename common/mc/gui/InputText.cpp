@@ -1,6 +1,8 @@
 #include "mc/MC.h"
 #include "InputText.h"
 
+#include "mc/network/client/MCClient.h"
+
 
 
 InputText::InputText()
@@ -10,7 +12,7 @@ InputText::InputText()
 	m_background.setOutlineThickness(-1.0F);
 
 	m_renderText.setCharacterSize(12);
-	m_renderText.setFont(MC::getInstance().getGlobalFont());
+	m_renderText.setFont(MCClient::getInstance().getGlobalFont());
 }
 
 void InputText::render(sf::RenderWindow& window)
@@ -30,9 +32,26 @@ void InputText::setSize(const sf::Vector2f& size)
 	m_background.setSize(size);
 }
 
-void InputText::onTextInput(uint32_t unicodeChar)
+bool InputText::onTextInput(uint32_t unicodeChar)
 {
-	m_text += unicodeChar;
+	switch (unicodeChar) {
+	case '\b':
+		if (!m_text.isEmpty()) {
+			m_text.erase(m_text.getSize() - 1);
+		}
+		break;
+
+	case '\n':
+	case '\r':
+		return true;
+
+	default:
+		m_text += unicodeChar;
+	}
 
 	m_renderText.setString(m_text);
+
+	m_callback.invoke();
+
+	return false;
 }

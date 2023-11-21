@@ -48,7 +48,7 @@ static void make_page(std::string& out, const char* buf, MCServer* server)
 
 			if (identifier.empty()) out += '$';
 			else if (identifier == "onlinePlayers") out += std::to_string(server->getClients().size());
-			else if (identifier == "maximumPlayers") out += "3";
+			else if (identifier == "maximumPlayers") out += server->getServerConfig().find("maximumPlayers")->second;
 			else if (identifier == "playerList") {
 				for (const MCServer::ClientListElement& e : server->getClients()) out += e.second.getPlayer()->getName() + '\n';
 			}
@@ -88,7 +88,6 @@ static int pageSendThread(void* param)
 				"HTTP/1.1 200 OK\r\n"
 				"Content-Type: text/html\r\n"
 				"\r\n";
-
 
 			ifstream f("index.html");
 			stringstream buf;

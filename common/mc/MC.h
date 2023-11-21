@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-namespace sf { class Font; }
-
 class World;
 class WorldServer;
 
@@ -30,8 +28,6 @@ public:
 	inline WorldServer* getWorld() { return m_world; }
 	inline Player* getLocalPlayer() { return m_localPlayer; }
 
-	inline const sf::Font& getGlobalFont() const { return *m_font; }
-
 
 public:
 
@@ -48,7 +44,4 @@ private:
 	WorldServer* m_world;
 
 	Player* m_localPlayer;
-
-
-	sf::Font* m_font;
 };

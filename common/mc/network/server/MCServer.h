@@ -48,6 +48,8 @@ public:
 
 	inline const ClientList& getClients() const { return m_clients; }
 
+	inline const std::map<std::string, std::string>& getServerConfig() const { return m_serverConfig; }
+
 private:
 
 	MCServerClient& getClient(nsocket_t socket);

@@ -7,6 +7,8 @@
 
 #include <string>
 
+class Gui;
+
 
 
 class MCClient
@@ -32,6 +34,9 @@ public:
 	void sendPacket(const PacketBase& b);
 
 	inline sf::RenderWindow& getWindow() { return m_window; }
+	inline const sf::Font& getGlobalFont() const { return m_font; }
+
+	inline void openGui(Gui* gui) { m_nextGui = gui; m_guiSwitch = true; }
 
 private:
 
@@ -47,6 +52,11 @@ private:
 	static MCClient* m_instance;
 
 	sf::RenderWindow m_window;
+	sf::Font m_font;
+
+	Gui* m_gui;
+	Gui* m_nextGui;
+	bool m_guiSwitch;
 
 	thread m_connectThread;
 	nsocket_t m_serverSocket;

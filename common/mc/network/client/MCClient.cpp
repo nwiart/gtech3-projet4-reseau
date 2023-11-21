@@ -24,13 +24,6 @@ string localPlayerName = "TheVid";
 
 int MCClient::main()
 {
-	// Ask for IP and name.
-	string stringip;
-
-	cout << "Enter your name : "; getline(cin, localPlayerName);
-	cout << "Enter server IP : "; getline(cin, stringip);
-
-
 	if (!network_init()) {
 		std::cout << "Network initialization failed!\n";
 		return 1;
@@ -44,9 +37,8 @@ int MCClient::main()
 
 	MCClient* client = new MCClient("MC Client");
 
-	// Connect to server.
-	cout << "\nTrying to reach server at " << stringip << ':' << MC::SERVER_PORT << "...\n";
-	client->connect(stringip.c_str(), MC::SERVER_PORT);
+	GuiMainMenu* menu = new GuiMainMenu();
+	client->openGui(menu);
 
 	// Main loop.
 	client->run();
@@ -62,11 +54,17 @@ int MCClient::main()
 
 MCClient::MCClient(const char* windowTitle)
 	: m_connectThread(&MCClient::connectThreadMain, this)
+	, m_gui(0)
+	, m_nextGui(0)
+	, m_guiSwitch(false)
 {
 	m_instance = this;
 
 	m_windowTitle = windowTitle;
 	m_frame = 0;
+
+	m_font.loadFromFile("C:/Windows/Fonts/consola.ttf");
+	m_font.setSmooth(false);
 }
 
 MCClient::~MCClient()
@@ -76,8 +74,6 @@ MCClient::~MCClient()
 
 
 
-GuiMainMenu* m;
-
 void MCClient::run()
 {
 	// Create window.
@@ -86,12 +82,17 @@ void MCClient::run()
 	m_window.setKeyRepeatEnabled(false);
 	m_window.setFramerateLimit(60);
 
-	m = new GuiMainMenu();
-
 
 	// Main loop.
 	while (m_window.isOpen())
 	{
+		// Gui open mechanism.
+		if (m_guiSwitch) {
+			if (m_gui) delete m_gui;
+			m_gui = m_nextGui;
+			m_guiSwitch = false;
+		}
+
 		// Window events.
 		sf::Event event;
 		while (m_window.pollEvent(event)) {
@@ -102,6 +103,7 @@ void MCClient::run()
 				break;
 
 			case sf::Event::KeyPressed:
+				if (m_gui) break;
 				switch (event.key.code)
 				{
 				case sf::Keyboard::Z: case sf::Keyboard::Up:    MC::getInstance().getLocalPlayer()->move( 0,  1); break;
@@ -114,10 +116,17 @@ void MCClient::run()
 				break;
 
 			case sf::Event::TextEntered:
-				
+				if (m_gui) {
+					m_gui->onTextInput(event.text.unicode);
+				}
 				break;
 
 			case sf::Event::MouseButtonReleased:
+				if (event.mouseButton.button == sf::Mouse::Left) {
+					if (m_gui) {
+						m_gui->onLeftClick(event.mouseButton.x, event.mouseButton.y);
+					}
+				}
 				break;
 			}
 		}
@@ -193,7 +202,7 @@ void MCClient::render()
 			m_window.draw(r);
 
 			// Player name.
-			sf::Text t(p->getName(), MC::getInstance().getGlobalFont(), 12);
+			sf::Text t(p->getName(), MCClient::getInstance().getGlobalFont(), 12);
 			t.setScale(sf::Vector2f(1.0F, -1.0F) / 16.0F);
 			t.setOrigin(t.getLocalBounds().getSize() * 0.5F);
 			t.setPosition(sf::Vector2f(p->getPosX() + 0.5F, p->getPosY() + 2.0F));
@@ -201,12 +210,15 @@ void MCClient::render()
 		}
 	}
 
-	sf::View view;
-	view.setCenter(sf::Vector2f(10.0F, 10.0F) * 16.0F);
-	view.setSize(sf::Vector2f(20.0F, 20.0F) * 16.0F);
-	m_window.setView(view);
+	if (m_gui)
+	{
+		sf::View view;
+		view.setCenter(sf::Vector2f(10.0F, 10.0F) * 16.0F);
+		view.setSize(sf::Vector2f(20.0F, 20.0F) * 16.0F);
+		m_window.setView(view);
 
-	m->render(m_window);
+		m_gui->render(m_window);
+	}
 
 	m_window.display();
 }
@@ -220,6 +232,9 @@ void MCClient::connect(const char* stringip, uint16_t port)
 	}
 
 	m_serverIP4 = N_MAKE_IPV4(ip[0], ip[1], ip[2], ip[3]);
+
+	// Connect to server.
+	cout << "\nTrying to reach server at " << stringip << ':' << MC::SERVER_PORT << "...\n";
 
 	m_connectThread.start();
 }

@@ -25,6 +25,9 @@
     <ClInclude Include="mc\gui\GuiMainMenu.h" />
     <ClInclude Include="mc\gui\Gui.h" />
     <ClInclude Include="mc\gui\InputText.h" />
+    <ClInclude Include="mc\gui\Button.h" />
+    <ClInclude Include="mc\gui\Text.h" />
+    <ClInclude Include="mc\gui\CallbackFunc.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="network_win32.cpp" />
@@ -47,5 +50,8 @@
     <ClCompile Include="mc\registry\ItemRegistry.cpp" />
     <ClCompile Include="mc\gui\GuiMainMenu.cpp" />
     <ClCompile Include="mc\gui\InputText.cpp" />
+    <ClCompile Include="mc\gui\Gui.cpp" />
+    <ClCompile Include="mc\gui\Button.cpp" />
+    <ClCompile Include="mc\gui\Text.cpp" />
   </ItemGroup>
 </Project>

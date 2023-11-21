@@ -62,6 +62,8 @@ void MCServer::host()
 	cout << "TIC TAC TOE Server\n";
 	cout << "---\n\n";
 
+	m_serverConfig.insert(std::pair<std::string, std::string>("maximumPlayers", "4"));
+
 	// Start game server.
 	nsocket_t listenSocket = network_setup_server(MC::SERVER_PORT, &MCServerPacketHandler::handleAccept, &MCServerPacketHandler::handleClose, &MCServerPacketHandler::handlePacket, this);
 	cout << "Now listening on " << MC::SERVER_PORT << "...\n";
