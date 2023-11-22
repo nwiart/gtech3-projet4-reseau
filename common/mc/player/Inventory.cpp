@@ -15,10 +15,11 @@ void Inventory::addItem(uint16_t itemID, int amount)
 	auto it = m_items.find(itemID);
 
 	if (it == m_items.end()) {
-		m_items.insert(std::pair<uint16_t, int>(itemID, amount));
+		ItemStack is(itemID, amount, 0);
+		m_items.insert(std::pair<uint16_t, ItemStack>(itemID, is));
 	}
 	else {
-		it->second += amount;
+		it->second.addAmount(amount);
 	}
 }
 
@@ -27,23 +28,28 @@ bool Inventory::removeItem(uint16_t itemID, int amount)
 	if (itemID == 0) return true;
 
 	auto it = m_items.find(itemID);
-	if (it == m_items.end() || it->second < amount) {
+	if (it == m_items.end()) {
 		return false;
 	}
 
-	if (it->second == amount) {
+	if (it->second.getAmount() == amount) {
 		m_items.erase(it);
-	}
-	else {
-		it->second -= amount;
+		return true;
 	}
 
-	return true;
+	return it->second.removeAmount(amount);
 }
 
-int Inventory::getItemAmountByID(uint16_t itemID) const
+const ItemStack* Inventory::getItemStackByID(uint16_t itemID) const
 {
 	auto it = m_items.find(itemID);
 
-	return (it == m_items.end()) ? 0 : it->second;
+	return (it == m_items.end()) ? 0 : &it->second;
+}
+
+ItemStack* Inventory::getItemStackByID(uint16_t itemID)
+{
+	auto it = m_items.find(itemID);
+
+	return (it == m_items.end()) ? 0 : &it->second;
 }

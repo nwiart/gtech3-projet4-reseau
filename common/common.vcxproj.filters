@@ -28,6 +28,9 @@
     <ClInclude Include="mc\gui\Button.h" />
     <ClInclude Include="mc\gui\Text.h" />
     <ClInclude Include="mc\gui\CallbackFunc.h" />
+    <ClInclude Include="mc\gui\ItemSlot.h" />
+    <ClInclude Include="mc\player\ItemStack.h" />
+    <ClInclude Include="mc\gui\GuiInventory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="network_win32.cpp" />
@@ -53,5 +56,8 @@
     <ClCompile Include="mc\gui\Gui.cpp" />
     <ClCompile Include="mc\gui\Button.cpp" />
     <ClCompile Include="mc\gui\Text.cpp" />
+    <ClCompile Include="mc\gui\ItemSlot.cpp" />
+    <ClCompile Include="mc\player\ItemStack.cpp" />
+    <ClCompile Include="mc\gui\GuiInventory.cpp" />
   </ItemGroup>
 </Project>

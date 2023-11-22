@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ItemStack.h"
+
 #include <map>
 
 
@@ -15,13 +17,15 @@ public:
 
 	bool removeItem(uint16_t itemID, int amount);
 
-	int getItemAmountByID(uint16_t itemID) const;
+	const ItemStack* getItemStackByID(uint16_t itemID) const;
+	ItemStack* getItemStackByID(uint16_t itemID);
 
-	inline const std::map<uint16_t, int>& getStackableItems() const { return m_items; }
+	inline const std::map<uint16_t, ItemStack>& getItems() const { return m_items; }
+	inline std::map<uint16_t, ItemStack>& getItems() { return m_items; }
 
 
 private:
 
-		/// Stackable items.
-	std::map<uint16_t, int> m_items;
+		/// Items.
+	std::map<uint16_t, ItemStack> m_items;
 };

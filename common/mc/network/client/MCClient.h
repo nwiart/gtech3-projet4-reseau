@@ -8,6 +8,7 @@
 #include <string>
 
 class Gui;
+class GuiInventory;
 
 
 
@@ -57,6 +58,8 @@ private:
 	Gui* m_gui;
 	Gui* m_nextGui;
 	bool m_guiSwitch;
+
+	GuiInventory* m_inventoryUI;
 
 	thread m_connectThread;
 	nsocket_t m_serverSocket;

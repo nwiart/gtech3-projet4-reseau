@@ -48,7 +48,7 @@ World::~World()
 	}
 }
 
-void World::spawnLocalPlayer(int playerID)
+Player* World::spawnLocalPlayer(int playerID)
 {
 	extern std::string localPlayerName;
 
@@ -59,6 +59,8 @@ void World::spawnLocalPlayer(int playerID)
 
 	m_players.insert(std::pair<int, Player*>(playerID, m_localPlayer));
 	m_localPlayer->m_world = this;
+
+	return m_localPlayer;
 }
 
 Player* World::spawnRemotePlayer(int playerID, const char* name, int xPos, int yPos)

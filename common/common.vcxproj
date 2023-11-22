@@ -25,8 +25,10 @@
     <ClInclude Include="mc\gui\Button.h" />
     <ClInclude Include="mc\gui\CallbackFunc.h" />
     <ClInclude Include="mc\gui\Gui.h" />
+    <ClInclude Include="mc\gui\GuiInventory.h" />
     <ClInclude Include="mc\gui\GuiMainMenu.h" />
     <ClInclude Include="mc\gui\InputText.h" />
+    <ClInclude Include="mc\gui\ItemSlot.h" />
     <ClInclude Include="mc\gui\Text.h" />
     <ClInclude Include="mc\MC.h" />
     <ClInclude Include="mc\network\client\MCClient.h" />
@@ -36,6 +38,7 @@
     <ClInclude Include="mc\network\server\MCServerPacketHandler.h" />
     <ClInclude Include="mc\network\server\world\WorldServer.h" />
     <ClInclude Include="mc\player\Inventory.h" />
+    <ClInclude Include="mc\player\ItemStack.h" />
     <ClInclude Include="mc\player\Player.h" />
     <ClInclude Include="mc\registry\ItemRegistry.h" />
     <ClInclude Include="mc\registry\TileRegistry.h" />
@@ -52,8 +55,10 @@
     <ClCompile Include="DisconnectReason.cpp" />
     <ClCompile Include="mc\gui\Button.cpp" />
     <ClCompile Include="mc\gui\Gui.cpp" />
+    <ClCompile Include="mc\gui\GuiInventory.cpp" />
     <ClCompile Include="mc\gui\GuiMainMenu.cpp" />
     <ClCompile Include="mc\gui\InputText.cpp" />
+    <ClCompile Include="mc\gui\ItemSlot.cpp" />
     <ClCompile Include="mc\gui\Text.cpp" />
     <ClCompile Include="mc\MC.cpp" />
     <ClCompile Include="mc\network\client\MCClient.cpp" />
@@ -62,6 +67,7 @@
     <ClCompile Include="mc\network\server\MCServerPacketHandler.cpp" />
     <ClCompile Include="mc\network\server\world\WorldServer.cpp" />
     <ClCompile Include="mc\player\Inventory.cpp" />
+    <ClCompile Include="mc\player\ItemStack.cpp" />
     <ClCompile Include="mc\player\Player.cpp" />
     <ClCompile Include="mc\registry\ItemRegistry.cpp" />
     <ClCompile Include="mc\registry\TileRegistry.cpp" />

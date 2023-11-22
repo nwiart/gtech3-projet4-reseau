@@ -25,7 +25,7 @@ public:
 	World(int sizeX, int sizeY, bool generate);
 	~World();
 
-	void spawnLocalPlayer(int playerID);
+	Player* spawnLocalPlayer(int playerID);
 	Player* spawnRemotePlayer(int playerID, const char* name, int xPos, int yPos);
 
 	uint16_t getTileAt(int x, int y) const;

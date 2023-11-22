@@ -7,10 +7,14 @@
 #include "mc/player/Player.h"
 #include "mc/player/Inventory.h"
 
+#include "mc/gui/GuiInventory.h"
+
 #include <iostream>
 
 
+
 static World* world = 0;
+
 
 
 void MCClientPacketHandler::handleClose(nsocket_t socket, void* param)
@@ -62,8 +66,10 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 
 			const Packet<ServerGetPlayerIDPacket>& p = (const Packet<ServerGetPlayerIDPacket>&) b;
 
-			world->spawnLocalPlayer(p->m_playerID);
+			Player* player = world->spawnLocalPlayer(p->m_playerID);
 			MC::getInstance().openLocalWorld(world);
+
+			client->m_inventoryUI = new GuiInventory(player->getInventory());
 		}
 		break;
 

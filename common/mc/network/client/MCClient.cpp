@@ -9,6 +9,7 @@
 #include "mc/network/client/MCClientPacketHandler.h"
 
 #include "mc/gui/GuiMainMenu.h"
+#include "mc/gui/GuiInventory.h"
 
 #include <iostream>
 #include <string>
@@ -210,13 +211,16 @@ void MCClient::render()
 		}
 	}
 
-	if (m_gui)
-	{
-		sf::View view;
-		view.setCenter(sf::Vector2f(10.0F, 10.0F) * 16.0F);
-		view.setSize(sf::Vector2f(20.0F, 20.0F) * 16.0F);
-		m_window.setView(view);
+	sf::View view;
+	view.setCenter(sf::Vector2f(10.0F, 10.0F) * 16.0F);
+	view.setSize(sf::Vector2f(20.0F, 20.0F) * 16.0F);
+	m_window.setView(view);
 
+	if (m_inventoryUI) {
+		m_inventoryUI->render(m_window);
+	}
+
+	if (m_gui) {
 		m_gui->render(m_window);
 	}
 
