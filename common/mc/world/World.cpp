@@ -31,7 +31,7 @@ World::World(int sizeX, int sizeY, bool generate)
 		m_tiles[i].m_item = 0;
 	}
 
-	WorldGenerator gen(this, false);
+	WorldGenerator gen(this, true);
 	gen.generate();
 }
 

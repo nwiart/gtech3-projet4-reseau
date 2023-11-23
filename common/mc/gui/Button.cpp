@@ -6,7 +6,8 @@
 
 
 Button::Button()
-	: m_enabled(false)
+	: m_visible(true)
+	, m_enabled(false)
 {
 	m_background.setOutlineColor(sf::Color::Black);
 	m_background.setOutlineThickness(-1.0F);
@@ -52,6 +53,11 @@ void Button::setText(const char* str)
 {
 	m_renderText.setString(str);
 	this->updateTextPosition();
+}
+
+void Button::setVisible(bool b)
+{
+	m_visible = b;
 }
 
 void Button::setEnabled(bool b)

@@ -15,6 +15,7 @@ public:
 	void render(sf::RenderWindow& window);
 
 	void setPosition(const sf::Vector2f& pos);
+	void setCenteredH();
 
 	void setText(const char* str);
 

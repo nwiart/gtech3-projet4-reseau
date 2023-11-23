@@ -3,6 +3,8 @@
 
 #include "mc/network/client/MCClient.h"
 
+#include "mc/gui/GuiStatus.h"
+
 
 
 GuiMainMenu::GuiMainMenu()
@@ -28,6 +30,7 @@ GuiMainMenu::GuiMainMenu()
 	m_buttonJoinServer.setCallback(this, &GuiMainMenu::onJoinServer);
 	m_buttonJoinServer.setEnabled(false);
 
+	m_inputName.setLimit(64);
 	m_inputName.setTextInputCallback(this, &GuiMainMenu::onInput);
 	m_inputServerIP.setTextInputCallback(this, &GuiMainMenu::onInput);
 
@@ -57,9 +60,10 @@ void GuiMainMenu::onJoinServer()
 	extern std::string localPlayerName;
 	localPlayerName = m_inputName.getText();
 
-	MCClient::getInstance().connect(m_inputServerIP.getText().c_str(), MC::SERVER_PORT);
+	GuiStatus::setStatus(0, 0, false);
+	GuiStatus::displayStatus();
 
-	MCClient::getInstance().openGui(0);
+	MCClient::getInstance().connect(m_inputServerIP.getText().c_str(), MC::SERVER_PORT);
 }
 
 void GuiMainMenu::onInput()

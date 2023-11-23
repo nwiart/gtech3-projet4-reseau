@@ -10,6 +10,7 @@ struct ConnectionDenialReason : public kdEnum<uint32_t>
 	{
 		ALLOWED,
 		BAD_NAME,
+		NAME_TAKEN,
 		SERVER_FULL,
 	};
 

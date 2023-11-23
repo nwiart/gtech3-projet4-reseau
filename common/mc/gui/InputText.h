@@ -24,10 +24,12 @@ public:
 	void setPosition(const sf::Vector2f& pos);
 	void setSize(const sf::Vector2f& size);
 
-	void setTextInputCallback(Gui* target, TextInputCallback func) { m_callback.set(target, func); }
+	inline void setTextInputCallback(Gui* target, TextInputCallback func) { m_callback.set(target, func); }
 
 	template<typename Func>
 	inline void setTextInputCallback(Gui* target, Func func) { this->setTextInputCallback(target, static_cast<TextInputCallback>(func)); }
+
+	void setLimit(int l);
 
 
 	bool onTextInput(uint32_t unicodeChar);
@@ -46,4 +48,6 @@ private:
 	sf::Text m_renderText;
 
 	CallbackFunc<TextInputCallback> m_callback;
+
+	int m_limit;
 };

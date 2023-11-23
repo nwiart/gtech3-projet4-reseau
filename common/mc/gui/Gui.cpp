@@ -13,6 +13,11 @@ Gui::Gui()
 
 }
 
+Gui::~Gui()
+{
+
+}
+
 void Gui::render(sf::RenderWindow& window)
 {
 	for (InputText* input : m_inputTexts) {
@@ -20,7 +25,9 @@ void Gui::render(sf::RenderWindow& window)
 	}
 
 	for (Button* button : m_buttons) {
-		button->render(window);
+		if (button->isVisible()) {
+			button->render(window);
+		}
 	}
 
 	for (Text* text : m_texts) {
@@ -47,6 +54,8 @@ void Gui::onLeftClick(int x, int y)
 	}
 
 	for (Button* button : m_buttons) {
+		if (!button->isVisible()) continue;
+
 		const sf::Vector2f& b = button->getPosition();
 		const sf::Vector2f& e = b + button->getSize();
 

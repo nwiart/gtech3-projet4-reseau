@@ -4,6 +4,8 @@
 #include "mc/network/server/MCServer.h"
 #include "mc/network/server/world/WorldServer.h"
 
+#include "mc/player/Player.h"
+
 #include <string>
 #include <iostream>
 
@@ -37,7 +39,23 @@ void MCServerPacketHandler::handlePacket(nsocket_t client, const PacketBase& b, 
 
 			ConnectionDenialReason reason = ConnectionDenialReason::ALLOWED;
 			
-			//reason = ConnectionDenialReason::BAD_NAME;
+			// Look for duplicate names.
+			for (const std::pair<int, Player*>& player : MC::getInstance().getLocalWorld()->getPlayers()) {
+				if (player.second->getName() == p->m_name) {
+					reason = ConnectionDenialReason::NAME_TAKEN;
+					break;
+				}
+			}
+
+			// Scan name characters.
+			int len = strlen(p->m_name);
+			for (int i = 0; i < len; ++i) {
+				char c = p->m_name[i];
+				if (!(isalnum(c) || c == ' ' || c == '-' || c == '_')) {
+					reason = ConnectionDenialReason::BAD_NAME;
+					break;
+				}
+			}
 
 			// Send connection response packet.
 			Packet<ConnectionResponsePacket> responsePacket;

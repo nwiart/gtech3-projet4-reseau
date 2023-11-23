@@ -5,6 +5,7 @@
 #define N_MAKE_IPV4(a, b, c, d) ((a << 24) | (b << 16) | (c << 8) | (d))
 
 
+
 typedef int64_t nsocket_t;
 
 typedef void (*PacketHandler)(nsocket_t, const struct PacketBase& b, void* param);

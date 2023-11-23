@@ -24,7 +24,7 @@ thread::~thread()
 
 void thread::start()
 {
-	if ( m_handle != INVALID_HANDLE_VALUE ) return;
+	if ( m_handle != INVALID_HANDLE_VALUE && this->isRunning() ) return;
 
 	m_handle = CreateThread(
 		0, 0,
@@ -36,6 +36,8 @@ void thread::start()
 void thread::stop( int exitCode )
 {
 	TerminateThread( m_handle, exitCode );
+	CloseHandle(m_handle);
+	m_handle = INVALID_HANDLE_VALUE;
 }
 
 void thread::wait()
@@ -45,7 +47,7 @@ void thread::wait()
 
 bool thread::isRunning() const
 {
-	return WaitForSingleObject( m_handle, 0 ) != 0;
+	return m_handle != INVALID_HANDLE_VALUE && WaitForSingleObject(m_handle, 0);
 }
 
 int thread::getExitCode() const

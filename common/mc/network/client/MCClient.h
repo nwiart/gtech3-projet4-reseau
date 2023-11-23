@@ -8,6 +8,7 @@
 #include <string>
 
 class Gui;
+class GuiStatus;
 class GuiInventory;
 
 
@@ -34,10 +35,12 @@ public:
 
 	void sendPacket(const PacketBase& b);
 
+	void displayStatus();
+
 	inline sf::RenderWindow& getWindow() { return m_window; }
 	inline const sf::Font& getGlobalFont() const { return m_font; }
 
-	inline void openGui(Gui* gui) { m_nextGui = gui; m_guiSwitch = true; }
+	inline void openGui(Gui* gui) { if (m_gui == gui) return; m_nextGui = gui; m_guiSwitch = true; }
 
 private:
 
@@ -59,6 +62,8 @@ private:
 	Gui* m_nextGui;
 	bool m_guiSwitch;
 
+public: bool m_showStatus;
+private:
 	GuiInventory* m_inventoryUI;
 
 	thread m_connectThread;

@@ -31,6 +31,7 @@
     <ClInclude Include="mc\gui\ItemSlot.h" />
     <ClInclude Include="mc\player\ItemStack.h" />
     <ClInclude Include="mc\gui\GuiInventory.h" />
+    <ClInclude Include="mc\gui\GuiStatus.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="network_win32.cpp" />
@@ -59,5 +60,6 @@
     <ClCompile Include="mc\gui\ItemSlot.cpp" />
     <ClCompile Include="mc\player\ItemStack.cpp" />
     <ClCompile Include="mc\gui\GuiInventory.cpp" />
+    <ClCompile Include="mc\gui\GuiStatus.cpp" />
   </ItemGroup>
 </Project>

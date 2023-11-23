@@ -27,6 +27,7 @@
     <ClInclude Include="mc\gui\Gui.h" />
     <ClInclude Include="mc\gui\GuiInventory.h" />
     <ClInclude Include="mc\gui\GuiMainMenu.h" />
+    <ClInclude Include="mc\gui\GuiStatus.h" />
     <ClInclude Include="mc\gui\InputText.h" />
     <ClInclude Include="mc\gui\ItemSlot.h" />
     <ClInclude Include="mc\gui\Text.h" />
@@ -57,6 +58,7 @@
     <ClCompile Include="mc\gui\Gui.cpp" />
     <ClCompile Include="mc\gui\GuiInventory.cpp" />
     <ClCompile Include="mc\gui\GuiMainMenu.cpp" />
+    <ClCompile Include="mc\gui\GuiStatus.cpp" />
     <ClCompile Include="mc\gui\InputText.cpp" />
     <ClCompile Include="mc\gui\ItemSlot.cpp" />
     <ClCompile Include="mc\gui\Text.cpp" />

@@ -6,6 +6,7 @@
 
 
 InputText::InputText()
+	: m_limit(256)
 {
 	m_background.setFillColor(sf::Color::Black);
 	m_background.setOutlineColor(sf::Color::White);
@@ -32,6 +33,12 @@ void InputText::setSize(const sf::Vector2f& size)
 	m_background.setSize(size);
 }
 
+void InputText::setLimit(int l)
+{
+	m_limit = l;
+}
+
+
 bool InputText::onTextInput(uint32_t unicodeChar)
 {
 	switch (unicodeChar) {
@@ -46,7 +53,10 @@ bool InputText::onTextInput(uint32_t unicodeChar)
 		return true;
 
 	default:
-		m_text += unicodeChar;
+		if (m_text.getSize() != m_limit) {
+			m_text += unicodeChar;
+		}
+		break;
 	}
 
 	m_renderText.setString(m_text);

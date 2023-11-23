@@ -15,6 +15,7 @@ class Gui
 public:
 
 	Gui();
+	virtual ~Gui();
 
 	virtual void render(sf::RenderWindow& window);
 

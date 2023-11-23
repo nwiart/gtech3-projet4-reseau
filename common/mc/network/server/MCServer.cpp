@@ -76,14 +76,13 @@ void MCServer::host()
 void MCServer::run()
 {
 	// Create dummy world and set current.
-	WorldServer* world = new WorldServer(31, 63, this);
-	MC::getInstance().openWorld(0, world);
+	WorldServer* world = new WorldServer(63, 63, this);
+	MC::getInstance().openWorld(world, world);
 
 	if (!m_headless) {
 		m_adminClientThread.start();
 	}
 
-	//while (m_adminClientThread.isRunning())
 	while (1)
 	{
 		network_server_poll_events();

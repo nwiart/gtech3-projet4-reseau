@@ -27,6 +27,7 @@ public:
 	void setSize(const sf::Vector2f& size);
 
 	void setText(const char* str);
+	void setVisible(bool v);
 	void setEnabled(bool b);
 
 	inline void setCallback(Gui* target, Callback func) { m_callback.set(target, func); }
@@ -35,8 +36,10 @@ public:
 	inline void setCallback(Gui* target, Func func) { this->setCallback(target, static_cast<Callback>(func)); }
 
 
-	const sf::Vector2f& getPosition() const { return m_background.getPosition(); }
-	const sf::Vector2f& getSize() const { return m_background.getSize(); }
+	inline const sf::Vector2f& getPosition() const { return m_background.getPosition(); }
+	inline const sf::Vector2f& getSize() const { return m_background.getSize(); }
+
+	inline bool isVisible() const { return m_visible; }
 
 private:
 
@@ -50,5 +53,6 @@ private:
 	sf::RectangleShape m_background;
 	sf::Text m_renderText;
 
+	bool m_visible;
 	bool m_enabled;
 };

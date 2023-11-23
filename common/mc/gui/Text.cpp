@@ -27,6 +27,13 @@ void Text::setPosition(const sf::Vector2f& pos)
 	m_renderText.setPosition(pos);
 }
 
+void Text::setCenteredH()
+{
+	sf::Vector2f pos = m_renderText.getPosition();
+	pos.x = (320.0F - m_renderText.getLocalBounds().getSize().x) * 0.5F;
+	m_renderText.setPosition(pos);
+}
+
 void Text::setText(const char* str)
 {
 	m_renderText.setString(str);

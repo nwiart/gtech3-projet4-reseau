@@ -8,6 +8,7 @@
 
 #include "mc/network/client/MCClientPacketHandler.h"
 
+#include "mc/gui/GuiStatus.h"
 #include "mc/gui/GuiMainMenu.h"
 #include "mc/gui/GuiInventory.h"
 
@@ -58,6 +59,7 @@ MCClient::MCClient(const char* windowTitle)
 	, m_gui(0)
 	, m_nextGui(0)
 	, m_guiSwitch(false)
+	, m_showStatus(false)
 {
 	m_instance = this;
 
@@ -84,9 +86,15 @@ void MCClient::run()
 	m_window.setFramerateLimit(60);
 
 
+
 	// Main loop.
 	while (m_window.isOpen())
 	{
+		if (m_showStatus) {
+			m_showStatus = false;
+			this->displayStatus();
+		}
+
 		// Gui open mechanism.
 		if (m_guiSwitch) {
 			if (m_gui) delete m_gui;
@@ -248,21 +256,36 @@ void MCClient::sendPacket(const PacketBase& b)
 	packet_send(m_serverSocket, b);
 }
 
+void MCClient::displayStatus()
+{
+	GuiStatus* status = new GuiStatus();
+	this->openGui(status);
+}
+
 
 
 int MCClient::connectThreadMain(void* param)
 {
 	MCClient* client = reinterpret_cast<MCClient*>(param);
 
+	GuiStatus::setStatus("Connecting to server...", 0, false);
+	GuiStatus::displayStatus();
+
 	client->m_serverSocket = network_setup_client4(client->m_serverIP4, MC::SERVER_PORT, &MCClientPacketHandler::handleClose, &MCClientPacketHandler::handlePacket, client);
 
-	// Send join information.
-	Packet<ClientJoinPacket> packet;
-	memcpy(packet->m_name, localPlayerName.c_str(), localPlayerName.size() + 1);
-	packet->m_isSpectator = true;
-	client->sendPacket(packet);
+	if (client->m_serverSocket == -1) {
+		GuiStatus::setStatus("Failed to reach server", "Unknown error", true);
+		GuiStatus::displayStatus();
+	}
+	else {
+		// Send join information.
+		Packet<ClientJoinPacket> packet;
+		memcpy(packet->m_name, localPlayerName.c_str(), localPlayerName.size() + 1);
+		packet->m_isSpectator = true;
+		client->sendPacket(packet);
 	
-	network_client_poll_events();
+		network_client_poll_events();
+	}
 
 	return 0;
 }

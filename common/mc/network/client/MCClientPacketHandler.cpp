@@ -70,6 +70,7 @@ void MCClientPacketHandler::handlePacket(nsocket_t socket, const PacketBase& b, 
 			MC::getInstance().openLocalWorld(world);
 
 			client->m_inventoryUI = new GuiInventory(player->getInventory());
+			client->openGui(0);
 		}
 		break;
 

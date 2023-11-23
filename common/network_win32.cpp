@@ -278,9 +278,11 @@ nsocket_t network_setup_client4(uint32_t addr, uint16_t port, CloseHandler close
 	getaddrinfo(address_str.str().c_str(), port_str, &hints, &result);
 	nsocket_t connectSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 
-	while (connect(connectSocket, result->ai_addr, result->ai_addrlen) != 0);
-
-	freeaddrinfo(result);
+	int connres = connect(connectSocket, result->ai_addr, result->ai_addrlen);
+	if (connres == SOCKET_ERROR) {
+		freeaddrinfo(result);
+		return INVALID_SOCKET;
+	}
 
 	g_clientPacketHandler = packetHandler;
 	g_clientCloseHandler = closeHandler;
