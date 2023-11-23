@@ -37,11 +37,6 @@ void GuiStatus::displayStatus()
 	LeaveCriticalSection(&s);
 
 	DeleteCriticalSection(&s);
-
-	/*if (!m_instance) {
-		std::cout << "Warning : Status not set before display!\n";
-	}
-	MCClient::getInstance().openGui(m_instance);*/
 }
 
 
